@@ -43,25 +43,37 @@ const styles = StyleSheet.create({
   container:{
     flex:1
   },
-  headerContainer: {
+  contenedorCabecera: {
     marginHorizontal: ancho(4),
     marginBottom: 20
   },
-  headerShape:{
+  formaCabecera:{
     width: ancho(100),
     height: alto(20),
   },
-  avatarContainer: {
+  contenedorAvatar: {
     height: alto(12),
     width : ancho(12),
     alignSelf: 'center'
   },
-  editIcon: {
+  iconoEditar: {
     position: 'absolute',
     bottom: 0,
     right: -12,
     padding: 7,
-    bo
+    borderRadius:50,
+    backgroundColor:'white'
+  },
+  info:{
+    flex:'row',
+    alignItems:'center',
+    gap:10
+  },
+  usuario:{
+    fontSize: alto(3),
+    fontWeight: '500',
+    color: tema.colors.primaryDark
   }
+
 
 })

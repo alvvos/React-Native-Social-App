@@ -11,7 +11,7 @@ import Icon from "../../assets/icons"
 import Boton from "../../components/Boton";
 import Avatar from "../../components/Avatar";
 
-const Home = () => {
+const Inicio = () => {
   const { user, setAuth } = useAuth();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -20,11 +20,11 @@ const Home = () => {
     <Pantalla>
       <View style={styles.container}>
         <View style={styles.header} >
-          <Text style={styles.titulo}>Bienvenido</Text>
+          <Text style={{fontFamily:"monospace", fontSize:ancho(8)}}>Bienvenido</Text>
           <View style={styles.icons}>
             <Pressable onPress={() => router.push("notificaciones")}>
               <Icon
-                name="heart" 
+                name="subir" 
                 size={alto(4)}
                 strokeWidth={2}
                 color={tema.colors.text}
@@ -36,7 +36,7 @@ const Home = () => {
               }}
             >
               <Icon
-                name="plus"
+                name="campana"
                 size={alto(4)}
                 strokeWidth={2}
                 color={tema.colors.text}
@@ -48,7 +48,7 @@ const Home = () => {
                 style={{borderWidth:2}}
               />
               <Icon
-                name="user"
+                name="perfil"
                 size={alto(4)}
                 strokeWidth={2}
                 color={tema.colors.primary}
@@ -61,7 +61,7 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Inicio;
 
 const styles = StyleSheet.create({
   container: {

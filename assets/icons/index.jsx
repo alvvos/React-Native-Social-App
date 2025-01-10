@@ -1,50 +1,14 @@
 import { View, Text } from 'react-native'
-import React from 'react'
-import Home from './Home';
-import Mail from './Mail';
-import Lock from './Lock';
-import User from './User';
-import Heart from './Heart';
-import Plus from './Plus';
-import Search from './Search';
-import Location from './Location';
-import Call from './Call';
+import Perfil from './Perfil';
+import Campana from './Campana';
 import { tema } from '../../constants/tema';
-import Camera from './Camera';
-import Edit from './Edit';
-import ArrowLeft from './ArrowLeft';
-import ThreeDotsCircle from './ThreeDotsCircle';
-import ThreeDotsHorizontal from './ThreeDotsHorizontal';
-import Comment from './Comment';
-import Share from './Share';
-import Send from './Send';
-import Delete from './Delete';
-import Logout from './logout';
-import Image from './Image';
-import Video from './Video';
+import Subir from './Subir';
+
 
 const icons = {
-    home: Home,
-    mail: Mail,
-    lock: Lock,
-    user: User,
-    heart: Heart,
-    plus: Plus,
-    search: Search,
-    location: Location,
-    call: Call,
-    camera: Camera,
-    edit: Edit,
-    arrowLeft: ArrowLeft,
-    threeDotsCircle: ThreeDotsCircle,
-    threeDotsHorizontal: ThreeDotsHorizontal,
-    comment: Comment,
-    share: Share,
-    send: Send,
-    delete: Delete,
-    logout: Logout,
-    image: Image,
-    video: Video,
+    perfil: Perfil,
+    campana: Campana,
+    subir: Subir
 }
 
 const Icon = ({name, ...props}) => {
