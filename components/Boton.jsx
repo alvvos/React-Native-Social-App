@@ -11,21 +11,16 @@ const Boton = ({
   onPress = () => {},
   Carga = false,
 }) => {
-
-
-  if(Carga){
-    return(
-        <View style={[styles.boton, botonStyle, {backgroundColor:'white'}]}>
-            <Carga />
-        </View>
-    )
+  if (Carga) {
+    return (
+      <View style={[styles.boton, botonStyle, { backgroundColor: "white" }]}>
+        <Carga />
+      </View>
+    );
   }
 
   return (
-    <Pressable
-      onPress={onPress}
-      style={[styles.boton, botonStyle]}
-    >
+    <Pressable onPress={onPress} style={[styles.boton, botonStyle]}>
       <Text style={[styles.text, textStyle]}>{titulo}</Text>
     </Pressable>
   );
@@ -39,8 +34,6 @@ const styles = StyleSheet.create({
     height: alto(6),
     justifyContent: "center",
     alignItems: "center",
-    borderCurve: "continuous",
-    borderRadius: tema.radius.xl,
   },
   text: {
     fontSize: alto(2.5),

@@ -13,7 +13,7 @@ import Boton from "../components/Boton";
 import { supabase } from "../lib/supabase";
 
 const Register = () => {
-  const router = useRouter(); 
+  const router = useRouter();
   const emailRef = useRef("");
   const nameRef = useRef("");
   const passwordRef = useRef("");
@@ -39,11 +39,11 @@ const Register = () => {
     } = await supabase.auth.register({
       email,
       password,
-      options:{
-        data:{
+      options: {
+        data: {
           name,
-        }
-      }
+        },
+      },
     });
 
     setLoading(false);
@@ -63,17 +63,16 @@ const Register = () => {
         <View style={styles.container}>
           <Atras router={router} />
           <View>
-            <Text style={styles.welcomeText}>Queremos</Text>
-            <Text style={styles.welcomeText}>Saber más de tí</Text>
+            <Text style={styles.welcomeText}>Regístrate</Text>
           </View>
           <View style={styles.form}>
             <Text style={{ fontSize: alto(2.5), color: tema.colors.text }}>
-              Por favor ingresa tus detalles a continuación 
+              Por favor ingresa tus detalles a continuación
             </Text>
             <Campo
               icon={
                 <Icon
-                  name="user"
+                  name="perfil"
                   size={26}
                   strokeWidth={2}
                   color={tema.colors.text}
@@ -87,7 +86,7 @@ const Register = () => {
             <Campo
               icon={
                 <Icon
-                  name="mail"
+                  name="perfil"
                   size={26}
                   strokeWidth={2}
                   color={tema.colors.text}
@@ -101,7 +100,7 @@ const Register = () => {
             <Campo
               icon={
                 <Icon
-                  name="lock"
+                  name="perfil"
                   size={26}
                   strokeWidth={2}
                   color={tema.colors.text}

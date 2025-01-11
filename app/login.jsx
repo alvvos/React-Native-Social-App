@@ -13,8 +13,7 @@ import Boton from "../components/Boton";
 import { supabase } from "../lib/supabase";
 
 const Login = () => {
-  
-  const router = useRouter();     
+  const router = useRouter();
   const emailRef = useRef("");
   const passwordRef = useRef("");
   const [loading, setLoading] = useState(false);
@@ -59,7 +58,7 @@ const Login = () => {
             <Campo
               icon={
                 <Icon
-                  name="mail"
+                  name="perfil"
                   size={26}
                   strokeWidth={2}
                   color={tema.colors.text}
@@ -73,7 +72,7 @@ const Login = () => {
             <Campo
               icon={
                 <Icon
-                  name="lock"
+                  name="perfil"
                   size={26}
                   strokeWidth={2}
                   color={tema.colors.text}
@@ -106,7 +105,7 @@ const Login = () => {
               >
                 Registrarme
               </Text>
-            </Pressable>            
+            </Pressable>
           </View>
         </View>
       </Pantalla>
