@@ -4,7 +4,6 @@ import { AuthProvider, useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 import { getUserData } from "../services/usuarios";
 
-
 const _layout = () => {
   return (
     <AuthProvider>
@@ -19,24 +18,22 @@ const MainLayout = () => {
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("user: ", session?.user?.id);
+      console.log("user: ", session?.user?.email);
       if (session) {
         setAuth(session?.user);
         updateUserData(session?.user);
         router.replace("/inicio");
-      } else {                              
+      } else {
         setAuth(null);
-        router.replace("/bienvenida");           
-      }                                       
+        router.replace("/bienvenida");
+      }
     });
   }, []);
 
-  const updateUserData = async(user)=>{
-
+  const updateUserData = async (user) => {
     let res = await getUserData(user?.id);
-    if(res.success) setUserData(res.data);
-
-  }
+    if (res.success) setUserData(res.data);
+  };
 
   return (
     <Stack

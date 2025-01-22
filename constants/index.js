@@ -1,2 +1,2 @@
-export const URL = "https://xylmjhxhdyvsrmltdcti.supabase.co"
-export const API = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5bG1qaHhoZHl2c3JtbHRkY3RpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjk3MDU1MzUsImV4cCI6MjA0NTI4MTUzNX0.HFmFw3SjJkKmAzYeGPs3xQeL8vp6EiqtqiPdQMQ6_sQ"
+export const URL = "https://mxmfldvwridcyfgcvqfd.supabase.co"
+export const API = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14bWZsZHZ3cmlkY3lmZ2N2cWZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQxNDQ5MDQsImV4cCI6MjAzOTcyMDkwNH0.a24y-dqjy7Y76DZqdxQy4-YBpyBJ8mDpTMwIi3lJxR8"

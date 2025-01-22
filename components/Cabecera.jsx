@@ -1,44 +1,50 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import { alto } from '../helpers/dimensiones'
-import { tema } from '../constants/tema'
-import Atras from './Atras'
-import { useRouter } from 'expo-router'
+import { StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { alto } from "../helpers/dimensiones";
+import { tema } from "../constants/tema";
+import Atras from "./Atras";
+import { useRouter } from "expo-router";
+import Desplegable from "./Desplegable";
 
-const Cabecera = ({titulo, atras=false, mb=10}) => {
+const Cabecera = ({ titulo, atras = false, mb = 10 }) => {
+  const router = useRouter();
 
-    const router = useRouter()
-    return (
-    <View style={[styles.container, {marginBottom: mb}]}>
-        {
-            atras && (
-                <View style={styles.atras}>
-                    <Atras router={router}/>
-                </View>
-            )
-        }
-        <Text style={styles.titulo}>{titulo || ""}</Text>
+  return (
+    <View style={[styles.container, { marginBottom: mb }]}>
+      {atras && (
+        <View style={styles.atras}>
+          <Atras router={router} />
+        </View>
+      )}
+      <Text style={styles.titulo}>{titulo || ""}</Text>
+      <View style={styles.cerrarSesion}>
+        <Desplegable style={styles.cerrarSesion} />
+      </View>
     </View>
-  )
-}
+  );
+};
 
-export default Cabecera
+export default Cabecera;
 
 const styles = StyleSheet.create({
-    container:{
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 5,
-        gap: 10,
-    },
-    titulo:{
-        fontSize: alto(2.7),
-        fontWeight: tema.fonts.semibold,
-        color: tema.colors.primary
-    },
-    atras:{
-        position: "absolute",
-        left:0
-    }
-})
+  container: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 5,
+    gap: 10,
+  },
+  titulo: {
+    fontSize: alto(2.7),
+    fontWeight: tema.fonts.semibold,
+    color: tema.colors.text,
+  },
+  atras: {
+    position: "absolute",
+    left: 0,
+  },
+  cerrarSesion: {
+    position: "absolute",
+    right: 0,
+  },
+});

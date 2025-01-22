@@ -5,8 +5,10 @@ import Icon from "../assets/icons";
 
 const Atras = ({ router }) => {
   return (
-    <Pressable onPress={() => router.back()} style={styles.button}>
-      <Text style={{ color: tema.colors.text }}>Atrás</Text>
+    <Pressable onPress={() => router.back()} style={styles.boton}>
+      <Text style={{ color: tema.colors.text, fontWeight: tema.fonts.bold }}>
+        Atrás
+      </Text>
     </Pressable>
   );
 };
@@ -14,9 +16,9 @@ const Atras = ({ router }) => {
 export default Atras;
 
 const styles = StyleSheet.create({
-  button: {
+  boton: {
     alignSelf: "flex-start",
-    padding: 5,
+    padding: 10,
     borderRadius: tema.radius.sm,
     backgroundColor: "rgba(0,0,0,0.07)",
   },

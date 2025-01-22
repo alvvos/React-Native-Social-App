@@ -36,7 +36,7 @@ const Register = () => {
     const {
       data: { session },
       error,
-    } = await supabase.auth.register({
+    } = await supabase.auth.signUp({
       email,
       password,
       options: {
