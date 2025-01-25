@@ -1,4 +1,4 @@
-import { StyleSheet, View, Alert, Text } from "react-native";
+import { StyleSheet, View, Image, Text } from "react-native";
 import React from "react";
 import Pantalla from "../../components/Pantalla";
 import { useRouter } from "expo-router";
@@ -27,11 +27,24 @@ const Perfil = () => {
             paddingHorizontal: ancho(7),
           }}
         >
-          <Cabecera
-            titulo={user?.email ? user.email.split("@")[0] : ""}
-            atras={true}
-            style={{ borderColor: tema.colors.primary, borderWidth: 1 }}
-          ></Cabecera>
+          <Cabecera titulo={user?.user_metadata.name} atras={true}></Cabecera>
+          <View style={styles.contenedorAvatar}>
+            <Image
+              source={require("../../assets/images/perfil.png")}
+              size={ancho(1)}
+              borderRadius={tema.radius.doublexxl}
+              alignSelf="center"
+              style={{ width: ancho(30), height: ancho(30), marginTop: 30 }}
+            />
+            <View style={styles.info}>
+              <Icon name="email" size={alto(3)} color={tema.colors.text} />
+              <Text style={{ fontSize: ancho(4) }}>{user?.email}</Text>
+            </View>
+            <View style={styles.info}>
+              <Icon name="telefono" size={alto(3)} color={tema.colors.text} />
+              <Text style={{ fontSize: ancho(4) }}>{user?.phoneNumber}</Text>
+            </View>
+          </View>
         </View>
       </Pantalla>
     </GestureHandlerRootView>
@@ -41,7 +54,7 @@ const Perfil = () => {
 export default Perfil;
 
 const styles = StyleSheet.create({
-  container: {
+  contenedor: {
     flex: 1,
   },
   contenedorCabecera: {
@@ -54,7 +67,7 @@ const styles = StyleSheet.create({
   },
   contenedorAvatar: {
     height: alto(12),
-    width: ancho(12),
+    width: ancho(50),
     alignSelf: "center",
   },
   iconoEditar: {
@@ -66,9 +79,10 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   info: {
-    flex: "row",
+    flexDirection: "row",
     alignItems: "center",
     gap: 10,
+    marginTop: 15,
   },
   usuario: {
     fontSize: alto(3),

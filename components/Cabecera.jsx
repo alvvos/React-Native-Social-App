@@ -17,7 +17,7 @@ const Cabecera = ({ titulo, atras = false, mb = 10 }) => {
         </View>
       )}
       <Text style={styles.titulo}>{titulo || ""}</Text>
-      <View style={styles.cerrarSesion}>
+      <View style={styles.menu}>
         <Desplegable style={styles.cerrarSesion} />
       </View>
     </View>
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
   },
-  cerrarSesion: {
+  menu: {
     position: "absolute",
     right: 0,
   },

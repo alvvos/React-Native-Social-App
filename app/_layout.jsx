@@ -18,7 +18,7 @@ const MainLayout = () => {
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("user: ", session?.user?.email);
+      console.log("user: ", session?.user);
       if (session) {
         setAuth(session?.user);
         updateUserData(session?.user);

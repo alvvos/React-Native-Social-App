@@ -3,18 +3,11 @@ import React from "react";
 import { tema } from "../constants/tema";
 import { alto } from "../helpers/dimensiones";
 import { Image } from "expo-image";
-import perfil from '../assets/images/perfil.png'
 
-
-const Avatar = ({
-  uri,
-  tam = alto(4),
-  rounded = tema.radius.md,
-  style={}
-}) => {
+const Avatar = ({ uri, tam, rounded, style = {} }) => {
   return (
     <Image
-      source={uri || perfil}
+      source={require("../assets/images/perfil.png")}
       transition={100}
       styles={[
         styles.avatar,
@@ -30,6 +23,6 @@ export default Avatar;
 const styles = StyleSheet.create({
   avatar: {
     borderCurve: "continuous",
-    borderColor: tema.colors.darklight
+    borderColor: tema.colors.darklight,
   },
 });

@@ -4,14 +4,22 @@ import { tema } from "../constants/tema";
 import { supabase } from "../lib/supabase";
 import { Alert } from "react-native";
 import { ancho } from "../helpers/dimensiones";
+import { useRouter } from "expo-router";
 
 const Desplegable = () => {
   const [menuVisible, setMenuVisible] = useState(false);
-  const opciones = [{ etiqueta: "Cerrar sesión", valor: "cerrarSesion" }];
+  const router = useRouter();
+  const opciones = [
+    { etiqueta: "Cerrar sesión", valor: "cerrarSesion" },
+    { etiqueta: "Editar perfil", valor: "editarPerfil" },
+  ];
   const manejarOpcionSeleccionada = (valor) => {
     console.log("Opción seleccionada:", valor);
     if (valor === "cerrarSesion") {
       cerrarSesion();
+    }
+    if (valor === "editarPerfil") {
+      router.push("editarPerfil");
     }
     setMenuVisible(false);
   };
@@ -86,12 +94,13 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 5,
     zIndex: 1,
-    width: ancho(30),
+    width: ancho(25),
     alignItems: "center",
     marginTop: 10,
+    padding: 5,
   },
   opcion: {
-    padding: 10,
+    padding: 5,
   },
 });
 

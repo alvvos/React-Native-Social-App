@@ -7,7 +7,7 @@ import { ancho, alto } from "../../helpers/dimensiones";
 import { tema } from "../../constants/tema";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import Icon from "../../assets/icons"
+import Icon from "../../assets/icons";
 import Boton from "../../components/Boton";
 import Avatar from "../../components/Avatar";
 
@@ -15,16 +15,18 @@ const Inicio = () => {
   const { user, setAuth } = useAuth();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  
+
   return (
     <Pantalla>
       <View style={styles.container}>
-        <View style={styles.header} >
-          <Text style={{fontFamily:"monospace", fontSize:ancho(8)}}>Bienvenido</Text>
+        <View style={styles.header}>
+          <Text style={{ fontFamily: "monospace", fontSize: ancho(8) }}>
+            Bienvenido
+          </Text>
           <View style={styles.icons}>
             <Pressable onPress={() => router.push("notificaciones")}>
               <Icon
-                name="subir" 
+                name="subir"
                 size={alto(4)}
                 strokeWidth={2}
                 color={tema.colors.text}
@@ -42,11 +44,11 @@ const Inicio = () => {
                 color={tema.colors.text}
               />
             </Pressable>
-            <Pressable onPress={() => {router.push("perfil")}}>
-              <Avatar
-                uri={user?.image}
-                style={{borderWidth:2}}
-              />
+            <Pressable
+              onPress={() => {
+                router.push("perfil");
+              }}
+            >
               <Icon
                 name="perfil"
                 size={alto(4)}
@@ -84,7 +86,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     gap: 18,
-    marginTop:20
+    marginTop: 20,
   },
   listStyle: {
     paddingTop: 20,
