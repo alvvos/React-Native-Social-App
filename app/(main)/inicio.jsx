@@ -20,7 +20,7 @@ const Inicio = () => {
     <Pantalla>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={{ fontFamily: "monospace", fontSize: ancho(8) }}>
+          <Text style={{ fontSize: ancho(8), letterSpacing: 2 }}>
             Bienvenido
           </Text>
           <View style={styles.icons}>

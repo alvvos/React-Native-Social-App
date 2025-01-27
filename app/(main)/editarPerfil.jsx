@@ -1,22 +1,50 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import React from "react";
 import Pantalla from "../../components/Pantalla";
-import { ancho, alto } from "../../helpers/dimensiones";
-import { tema } from "../../constants/tema";
+import { useRouter } from "expo-router";
 import Cabecera from "../../components/Cabecera";
+import { useAuth } from "../../context/AuthContext";
+import { ancho, alto } from "../../helpers/dimensiones";
 import {
   GestureHandlerRootView,
-  ScrollView,
+  TouchableOpacity,
 } from "react-native-gesture-handler";
+import Icon from "../../assets/icons";
+import { tema } from "../../constants/tema";
+import { Image } from "expo-image";
 
 const EditarPerfil = () => {
+  const { user, setAuth } = useAuth();
+  const router = useRouter();
+
   return (
     <GestureHandlerRootView>
-      <Pantalla>
-        <View style={styles.contenedor}>
-          <ScrollView styles={{ flex: 1 }}>
-            <Cabecera titulo="Editar Perfil" atras="true" />
-          </ScrollView>
+      <Pantalla colorFondo="white">
+        <View
+          style={{
+            flex: 1,
+            paddingHorizontal: ancho(7),
+          }}
+        >
+          <Cabecera titulo={"Editar Perfil"} atras={true}></Cabecera>
+          <View style={styles.contenedorAvatar}>
+            <Image
+              source={user?.image || require("../../assets/images/perfil.png")}
+              size={ancho(1)}
+              borderRadius={tema.radius.doublexxl}
+              alignSelf="center"
+              transition={100}
+              style={{
+                width: ancho(30),
+                height: ancho(30),
+                marginTop: 30,
+                marginBottom: 30,
+              }}
+            />
+            <Pressable style={styles.boton}>
+              <Text>Cambiar foto</Text>
+            </Pressable>
+          </View>
         </View>
       </Pantalla>
     </GestureHandlerRootView>
@@ -28,7 +56,6 @@ export default EditarPerfil;
 const styles = StyleSheet.create({
   contenedor: {
     flex: 1,
-    paddingHorizontal: ancho(7),
   },
   contenedorCabecera: {
     marginHorizontal: ancho(4),
@@ -38,9 +65,14 @@ const styles = StyleSheet.create({
     width: ancho(100),
     height: alto(20),
   },
+  boton: {
+    padding: 10,
+    backgroundColor: tema.colors.darklight,
+    borderRadius: tema.radius.sm,
+  },
   contenedorAvatar: {
-    height: alto(12),
-    width: ancho(50),
+    height: alto(30),
+    width: ancho(100),
     alignSelf: "center",
   },
   iconoEditar: {
@@ -55,7 +87,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    marginTop: 15,
+    marginTop: 10,
+    justifyContent: "center",
   },
   usuario: {
     fontSize: alto(3),

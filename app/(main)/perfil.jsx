@@ -1,4 +1,4 @@
-import { StyleSheet, View, Image, Text } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import React from "react";
 import Pantalla from "../../components/Pantalla";
 import { useRouter } from "expo-router";
@@ -11,8 +11,7 @@ import {
 } from "react-native-gesture-handler";
 import Icon from "../../assets/icons";
 import { tema } from "../../constants/tema";
-import Desplegable from "../../components/Desplegable";
-import { supabase } from "../../lib/supabase";
+import { Image } from "expo-image";
 
 const Perfil = () => {
   const { user, setAuth } = useAuth();
@@ -30,11 +29,17 @@ const Perfil = () => {
           <Cabecera titulo={user?.user_metadata.name} atras={true}></Cabecera>
           <View style={styles.contenedorAvatar}>
             <Image
-              source={require("../../assets/images/perfil.png")}
+              source={user?.image || require("../../assets/images/perfil.png")}
               size={ancho(1)}
               borderRadius={tema.radius.doublexxl}
               alignSelf="center"
-              style={{ width: ancho(30), height: ancho(30), marginTop: 30 }}
+              transition={100}
+              style={{
+                width: ancho(30),
+                height: ancho(30),
+                marginTop: 30,
+                marginBottom: 30,
+              }}
             />
             <View style={styles.info}>
               <Icon name="email" size={alto(3)} color={tema.colors.text} />
@@ -66,8 +71,8 @@ const styles = StyleSheet.create({
     height: alto(20),
   },
   contenedorAvatar: {
-    height: alto(12),
-    width: ancho(50),
+    height: alto(30),
+    width: ancho(100),
     alignSelf: "center",
   },
   iconoEditar: {
@@ -82,7 +87,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    marginTop: 15,
+    marginTop: 10,
+    justifyContent: "center",
   },
   usuario: {
     fontSize: alto(3),

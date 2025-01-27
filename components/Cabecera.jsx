@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
     fontSize: alto(2.7),
     fontWeight: tema.fonts.semibold,
     color: tema.colors.text,
+    letterSpacing: 1.5,
   },
   atras: {
     position: "absolute",
