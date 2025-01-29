@@ -1,10 +1,10 @@
 export const tema = {
     colors: {
-      primary: "#e0185b",
+      primary: "#f52e79",
       primaryDark: "#00AC62",
       dark: "#3E3E3E",
       darklight: "#E1E1E1",
-      rose: "#ef4444",
+      rose: "rgba(255, 0, 128, 0.5)",
       text: "#494949"
     },
     fonts: {

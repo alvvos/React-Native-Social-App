@@ -5,6 +5,7 @@ import { tema } from "../../constants/tema";
 import Subir from "./Subir";
 import Email from "./Email";
 import Telefono from "./Telefono";
+import Usuario from "./Usuario";
 
 const icons = {
   perfil: Perfil,
@@ -12,6 +13,7 @@ const icons = {
   subir: Subir,
   email: Email,
   telefono: Telefono,
+  usuario: Usuario,
 };
 
 const Icon = ({ name, ...props }) => {

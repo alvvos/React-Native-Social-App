@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { TextInput } from "react-native-gesture-handler";
 import { tema } from "../constants/tema";
-import { alto } from "../helpers/dimensiones";
+import { alto, ancho } from "../helpers/dimensiones";
 
 const Campo = (props) => {
   return (
@@ -11,7 +11,7 @@ const Campo = (props) => {
     >
       {props.icon && props.icon}
       <TextInput
-        style={{ flex: 1 }}
+        style={{ flex: 1, fontSize: ancho(4) }}
         placeholderTextColor={tema.colors.textLight}
         ref={props.inputRef && props.inputRef}
         {...props}

@@ -46,7 +46,12 @@ const Perfil = () => {
               <Text style={{ fontSize: ancho(4) }}>{user?.email}</Text>
             </View>
             <View style={styles.info}>
-              <Icon name="telefono" size={alto(3)} color={tema.colors.text} />
+              <Icon
+                name="telefono"
+                size={alto(3)}
+                color={tema.colors.text}
+                strokeWidth={2}
+              />
               <Text style={{ fontSize: ancho(4) }}>{user?.phoneNumber}</Text>
             </View>
           </View>

@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, Pressable } from "react-native";
 import React from "react";
 import Pantalla from "../../components/Pantalla";
 import { useRouter } from "expo-router";
@@ -12,10 +12,20 @@ import {
 import Icon from "../../assets/icons";
 import { tema } from "../../constants/tema";
 import { Image } from "expo-image";
+import Campo from "../../components/Campo";
 
 const EditarPerfil = () => {
-  const { user, setAuth } = useAuth();
+  const { user: currentUser } = useAuth();
+  const [user, setUser] = useState({
+    nombre: "",
+    telefono: "",
+    imagen: "",
+    bio: "",
+    address: "",
+  });
   const router = useRouter();
+
+  const cambiarFoto = () => {};
 
   return (
     <GestureHandlerRootView>
@@ -29,7 +39,9 @@ const EditarPerfil = () => {
           <Cabecera titulo={"Editar Perfil"} atras={true}></Cabecera>
           <View style={styles.contenedorAvatar}>
             <Image
-              source={user?.image || require("../../assets/images/perfil.png")}
+              source={
+                currentUser?.image || require("../../assets/images/perfil.png")
+              }
               size={ancho(1)}
               borderRadius={tema.radius.doublexxl}
               alignSelf="center"
@@ -41,9 +53,46 @@ const EditarPerfil = () => {
                 marginBottom: 30,
               }}
             />
-            <Pressable style={styles.boton}>
+            <Pressable style={styles.boton} onPress={cambiarFoto}>
               <Text>Cambiar foto</Text>
             </Pressable>
+          </View>
+          <View style={styles.contenedor}>
+            <Text
+              style={{
+                fontSize: ancho(5),
+                color: tema.colors.text,
+                alignSelf: "center",
+              }}
+            >
+              Completa tus datos
+            </Text>
+            <View style={([styles.contenedor], { marginTop: 30 })}>
+              <Campo
+                icon={
+                  <Icon
+                    name="usuario"
+                    size={ancho(6)}
+                    color={tema.colors.text}
+                  />
+                }
+                placeholder="Nombre"
+                value={null}
+                onChangeText={(value) => {}}
+              />
+              <Campo
+                icon={
+                  <Icon
+                    name="usuario"
+                    size={ancho(6)}
+                    color={tema.colors.text}
+                  />
+                }
+                placeholder="Nombre"
+                value={null}
+                onChangeText={(value) => {}}
+              />
+            </View>
           </View>
         </View>
       </Pantalla>
@@ -69,6 +118,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: tema.colors.darklight,
     borderRadius: tema.radius.sm,
+    alignSelf: "center",
   },
   contenedorAvatar: {
     height: alto(30),

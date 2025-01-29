@@ -78,11 +78,11 @@ const styles = StyleSheet.create({
   },
   boton: {
     padding: 10,
-    backgroundColor: tema.colors.darklight,
+    backgroundColor: tema.colors.primary,
     borderRadius: tema.radius.sm,
   },
   textoBoton: {
-    color: tema.colors.text,
+    color: "white",
     fontWeight: tema.fonts.bold,
   },
   menu: {
