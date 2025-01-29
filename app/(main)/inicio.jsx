@@ -23,40 +23,40 @@ const Inicio = () => {
           <Text style={{ fontSize: ancho(8), letterSpacing: 2 }}>
             Bienvenido
           </Text>
-          <View style={styles.icons}>
-            <Pressable onPress={() => router.push("notificaciones")}>
-              <Icon
-                name="subir"
-                size={alto(4)}
-                strokeWidth={2}
-                color={tema.colors.text}
-              />
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                router.push("nuevaPublicacion");
-              }}
-            >
-              <Icon
-                name="campana"
-                size={alto(4)}
-                strokeWidth={2}
-                color={tema.colors.text}
-              />
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                router.push("perfil");
-              }}
-            >
-              <Icon
-                name="perfil"
-                size={alto(4)}
-                strokeWidth={2}
-                color={tema.colors.primary}
-              />
-            </Pressable>
-          </View>
+        </View>
+        <View style={styles.icons}>
+          <Pressable onPress={() => router.push("notificaciones")}>
+            <Icon
+              name="subir"
+              size={alto(4)}
+              strokeWidth={2}
+              color={tema.colors.text}
+            />
+          </Pressable>
+          <Pressable
+            onPress={() => {
+              router.push("nuevaPublicacion");
+            }}
+          >
+            <Icon
+              name="campana"
+              size={alto(4)}
+              strokeWidth={2}
+              color={tema.colors.text}
+            />
+          </Pressable>
+          <Pressable
+            onPress={() => {
+              router.push("perfil");
+            }}
+          >
+            <Icon
+              name="perfil"
+              size={alto(4)}
+              strokeWidth={2}
+              color={tema.colors.primary}
+            />
+          </Pressable>
         </View>
       </View>
     </Pantalla>
@@ -82,11 +82,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   icons: {
+    position: "absolute",
+    bottom: 0,
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center",
-    gap: 18,
-    marginTop: 20,
+    alignSelf: "center",
+    gap: ancho(30),
+    padding: 30,
   },
   listStyle: {
     paddingTop: 20,

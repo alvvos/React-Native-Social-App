@@ -1,5 +1,5 @@
 import { StyleSheet, View, Text, Pressable } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import Pantalla from "../../components/Pantalla";
 import { useRouter } from "expo-router";
 import Cabecera from "../../components/Cabecera";
@@ -13,6 +13,8 @@ import Icon from "../../assets/icons";
 import { tema } from "../../constants/tema";
 import { Image } from "expo-image";
 import Campo from "../../components/Campo";
+import { useState } from "react";
+import { useFilterScreenChildren } from "expo-router/build/layouts/withLayoutContext";
 
 const EditarPerfil = () => {
   const { user: currentUser } = useAuth();
@@ -20,10 +22,22 @@ const EditarPerfil = () => {
     nombre: "",
     telefono: "",
     imagen: "",
-    bio: "",
-    address: "",
+    biografia: "",
+    direccion: "",
   });
   const router = useRouter();
+
+  useEffect(() => {
+    if (currentUser) {
+      setUser({
+        nombre: currentUser.name || "",
+        telefono: currentUser.phoneNumber || "",
+        imagen: currentUser.image || "",
+        biografia: currentUser.bio || "",
+        direccion: currentUser.address || "",
+      });
+    }
+  }, [currentUser]);
 
   const cambiarFoto = () => {};
 
@@ -39,9 +53,7 @@ const EditarPerfil = () => {
           <Cabecera titulo={"Editar Perfil"} atras={true}></Cabecera>
           <View style={styles.contenedorAvatar}>
             <Image
-              source={
-                currentUser?.image || require("../../assets/images/perfil.png")
-              }
+              source={user?.image || require("../../assets/images/perfil.png")}
               size={ancho(1)}
               borderRadius={tema.radius.doublexxl}
               alignSelf="center"
