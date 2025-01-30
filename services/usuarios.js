@@ -1,11 +1,11 @@
 import { supabase } from "../lib/supabase";
 
-export const getUserData = async (userId) => {
+export const getUsuarioData = async (id_usuario) => {
   try {
     const { data, error } = await supabase
       .from("usuarios")
       .select()
-      .eq("id", userId)
+      .eq("id", id_usuario)
       .single();
 
     if (error) {

@@ -17,8 +17,8 @@ import { useState } from "react";
 import { useFilterScreenChildren } from "expo-router/build/layouts/withLayoutContext";
 
 const EditarPerfil = () => {
-  const { user: currentUser } = useAuth();
-  const [user, setUser] = useState({
+  const { usuario, setAuth } = useAuth();
+  const [_usuario, setUsuario] = useState({
     nombre: "",
     telefono: "",
     imagen: "",
@@ -28,16 +28,17 @@ const EditarPerfil = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (currentUser) {
-      setUser({
-        nombre: currentUser.name || "",
-        telefono: currentUser.phoneNumber || "",
-        imagen: currentUser.image || "",
-        biografia: currentUser.bio || "",
-        direccion: currentUser.address || "",
+    if (usuario) {
+      console.log(usuario);
+      setUsuario({
+        nombre: usuario.user_metadata.name || "",
+        telefono: usuario.phoneNumber || "",
+        imagen: usuario.image || null,
+        biografia: usuario.bio || "",
+        direccion: usuario.address || "",
       });
     }
-  }, [currentUser]);
+  }, [usuario]);
 
   const cambiarFoto = () => {};
 
@@ -53,7 +54,9 @@ const EditarPerfil = () => {
           <Cabecera titulo={"Editar Perfil"} atras={true}></Cabecera>
           <View style={styles.contenedorAvatar}>
             <Image
-              source={user?.image || require("../../assets/images/perfil.png")}
+              source={
+                _usuario?.imagen || require("../../assets/images/perfil.png")
+              }
               size={ancho(1)}
               borderRadius={tema.radius.doublexxl}
               alignSelf="center"
@@ -79,7 +82,33 @@ const EditarPerfil = () => {
             >
               Completa tus datos
             </Text>
-            <View style={([styles.contenedor], { marginTop: 30 })}>
+            <View style={([styles.contenedor], { marginTop: 30, gap: 20 })}>
+              <Campo
+                icon={
+                  <Icon
+                    name="usuario"
+                    size={ancho(6)}
+                    color={tema.colors.text}
+                  />
+                }
+                placeholder="Nombre"
+                value={_usuario.nombre}
+                onChangeText={(value) =>
+                  setUsuario({ ..._usuario, nombre: value })
+                }
+              />
+              <Campo
+                icon={
+                  <Icon
+                    name="usuario"
+                    size={ancho(6)}
+                    color={tema.colors.text}
+                  />
+                }
+                placeholder="Nombre"
+                value={null}
+                onChangeText={(value) => {}}
+              />
               <Campo
                 icon={
                   <Icon

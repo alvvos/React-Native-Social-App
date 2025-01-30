@@ -58,7 +58,7 @@ const Login = () => {
             <Campo
               icon={
                 <Icon
-                  name="perfil"
+                  name="usuario"
                   size={26}
                   strokeWidth={2}
                   color={tema.colors.text}

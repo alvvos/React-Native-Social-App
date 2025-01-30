@@ -14,7 +14,7 @@ import { tema } from "../../constants/tema";
 import { Image } from "expo-image";
 
 const Perfil = () => {
-  const { user, setAuth } = useAuth();
+  const { usuario, setAuth } = useAuth();
   const router = useRouter();
 
   return (
@@ -26,10 +26,15 @@ const Perfil = () => {
             paddingHorizontal: ancho(7),
           }}
         >
-          <Cabecera titulo={user?.user_metadata.name} atras={true}></Cabecera>
+          <Cabecera
+            titulo={usuario?.user_metadata.name}
+            atras={true}
+          ></Cabecera>
           <View style={styles.contenedorAvatar}>
             <Image
-              source={user?.image || require("../../assets/images/perfil.png")}
+              source={
+                usuario?.image || require("../../assets/images/perfil.png")
+              }
               size={ancho(1)}
               borderRadius={tema.radius.doublexxl}
               alignSelf="center"
@@ -43,7 +48,7 @@ const Perfil = () => {
             />
             <View style={styles.info}>
               <Icon name="email" size={alto(3)} color={tema.colors.text} />
-              <Text style={{ fontSize: ancho(4) }}>{user?.email}</Text>
+              <Text style={{ fontSize: ancho(4) }}>{usuario?.email}</Text>
             </View>
             <View style={styles.info}>
               <Icon
@@ -52,7 +57,7 @@ const Perfil = () => {
                 color={tema.colors.text}
                 strokeWidth={2}
               />
-              <Text style={{ fontSize: ancho(4) }}>{user?.phoneNumber}</Text>
+              <Text style={{ fontSize: ancho(4) }}>{usuario?.phoneNumber}</Text>
             </View>
           </View>
         </View>
