@@ -4,24 +4,10 @@ import { tema } from "../constants/tema";
 import { alto } from "../helpers/dimensiones";
 import Carga from "./Carga";
 
-const Boton = ({
-  botonStyle,
-  textStyle,
-  titulo = "",
-  onPress = () => {},
-  Carga = false,
-}) => {
-  if (Carga) {
-    return (
-      <View style={[styles.boton, botonStyle, { backgroundColor: "white" }]}>
-        <Carga />
-      </View>
-    );
-  }
-
+const Boton = ({ botonStyle, textoStyle, titulo = "", onPress = () => {} }) => {
   return (
     <Pressable onPress={onPress} style={[styles.boton, botonStyle]}>
-      <Text style={[styles.text, textStyle]}>{titulo}</Text>
+      <Text style={[styles.texto, textoStyle]}>{titulo}</Text>
     </Pressable>
   );
 };
@@ -35,7 +21,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  text: {
+  texto: {
     fontSize: alto(2.5),
     color: "white",
     fontWeight: tema.fonts.bold,

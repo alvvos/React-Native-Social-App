@@ -7,7 +7,10 @@ import { alto, ancho } from "../helpers/dimensiones";
 const Campo = (props) => {
   return (
     <View
-      style={[styles.container, props.containerStyles && props.containerStyles]}
+      style={[
+        styles.contenedor,
+        props.contenedorStyles && props.contenedorStyles,
+      ]}
     >
       {props.icon && props.icon}
       <TextInput
@@ -23,7 +26,7 @@ const Campo = (props) => {
 export default Campo;
 
 const styles = StyleSheet.create({
-  container: {
+  contenedor: {
     flexDirection: "row",
     height: alto(8),
     alignItems: "center",
