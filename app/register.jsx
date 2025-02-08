@@ -42,6 +42,7 @@ const Register = () => {
       options: {
         data: {
           name,
+          email,
         },
       },
     });

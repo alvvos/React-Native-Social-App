@@ -7,7 +7,7 @@ export const getUsuarioData = async (id_usuario) => {
       .select()
       .eq("id", id_usuario)
       .single();
-
+      
     if (error) {
       return { success: false, msg: error?.message };
     }
@@ -28,7 +28,7 @@ export const updateUsuarioData = async (id_usuario, data) => {
       .eq('id', id_usuario)
 
     if (error) {
-      return { success: false, msg: error?.message };
+      return { success: false, msg: "Error:" + error?.message };
     }
 
     return { success: true, data };

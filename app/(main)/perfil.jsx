@@ -9,6 +9,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Icon from "../../assets/icons";
 import { tema } from "../../constants/tema";
 import { Image } from "expo-image";
+import { useEffect } from "react";
+import { use } from "react";
 
 const Perfil = () => {
   const { usuario, setAuth } = useAuth();
@@ -20,7 +22,7 @@ const Perfil = () => {
         <View
           style={{
             flex: 1,
-            paddingHorizontal: ancho(7),
+            padding: ancho(7),
           }}
         >
           <Cabecera titulo={usuario?.nombre} atras={true}></Cabecera>
@@ -42,7 +44,7 @@ const Perfil = () => {
             />
             <View style={styles.info}>
               <Icon name="email" size={alto(3)} color={tema.colors.text} />
-              <Text style={{ fontSize: ancho(4) }}>{usuario.nombre}</Text>
+              <Text style={{ fontSize: ancho(4) }}>{usuario?.email}</Text>
             </View>
             <View style={styles.info}>
               <Icon

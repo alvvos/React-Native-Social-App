@@ -12,8 +12,6 @@ import Boton from "../../components/Boton";
 import Avatar from "../../components/Avatar";
 
 const Inicio = () => {
-  const { user, setAuth } = useAuth();
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   return (
@@ -27,7 +25,7 @@ const Inicio = () => {
         <View style={styles.icons}>
           <Pressable onPress={() => router.push("notificaciones")}>
             <Icon
-              name="subir"
+              name="campana"
               size={alto(4)}
               strokeWidth={2}
               color={tema.colors.text}
@@ -39,7 +37,7 @@ const Inicio = () => {
             }}
           >
             <Icon
-              name="campana"
+              name="subir"
               size={alto(4)}
               strokeWidth={2}
               color={tema.colors.text}
@@ -68,6 +66,7 @@ export default Inicio;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: ancho(7),
   },
   welcomeImage: {
     height: alto(60),

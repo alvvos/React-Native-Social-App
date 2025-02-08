@@ -2,7 +2,6 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { tema } from "../constants/tema";
 import { alto } from "../helpers/dimensiones";
-import Carga from "./Carga";
 
 const Boton = ({ botonStyle, textoStyle, titulo = "", onPress = () => {} }) => {
   return (
