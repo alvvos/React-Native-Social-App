@@ -11,10 +11,14 @@ import { tema } from "../../constants/tema";
 import { Image } from "expo-image";
 import { useEffect } from "react";
 import { use } from "react";
+import { obtenerImagen } from "../../services/imagenes";
 
 const Perfil = () => {
   const { usuario, setAuth } = useAuth();
   const router = useRouter();
+  useEffect(() => {
+    console.log("usuario en perfil: ", usuario);
+  }, []);
 
   return (
     <GestureHandlerRootView>
@@ -28,9 +32,7 @@ const Perfil = () => {
           <Cabecera titulo={usuario?.nombre} atras={true}></Cabecera>
           <View style={styles.contenedorAvatar}>
             <Image
-              source={
-                usuario?.image || require("../../assets/images/perfil.png")
-              }
+              source={obtenerImagen(usuario?.imagen)}
               size={ancho(1)}
               borderRadius={tema.radius.doublexxl}
               alignSelf="center"

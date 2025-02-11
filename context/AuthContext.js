@@ -10,8 +10,12 @@ export const AuthProvider = ({ children }) => {
     setUsuario(authUsuario);
   };
 
-  const setUsuarioData = (usuarioData) => {
-    setUsuario({ ...usuarioData });
+  const obtenerSupabaseId = ()=>{
+    return usuario.id
+  }
+
+  const setUsuarioData = (usuarioData, id) => {
+    setUsuario({ ...usuarioData, id });
   };
 
   return (

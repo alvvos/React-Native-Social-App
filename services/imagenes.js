@@ -1,6 +1,24 @@
 import * as FileSystem from 'expo-file-system';
 import { supabase } from '../lib/supabase';
 import { decode } from 'base64-arraybuffer';
+import { URL } from '../constants';
+
+
+export const obtenerImagen = ruta =>{
+    if(ruta){
+        return supabase_url(ruta); 
+    }else{
+        return require('../assets/images/perfil.png');
+    }
+}
+
+export const supabase_url = ruta =>{
+    if(ruta){
+        return {uri: `${URL}/storage/v1/object/public/subidas/${ruta}`}
+    }
+
+    return null;
+}
 
 
 export const subirImagen = async (nombre_carpeta, uri, esImagen=true) => {

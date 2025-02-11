@@ -18,11 +18,11 @@ import Boton from "../../components/Boton";
 import { updateUsuarioData } from "../../services/usuarios";
 import { Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { subirImagen } from "../../services/imagenes";
+import { obtenerImagen, subirImagen } from "../../services/imagenes";
 
 const EditarPerfil = () => {
   const { usuario, setAuth, setUsuarioData } = useAuth();
-  const _id = usuario?.user_metadata?.sub;
+  const _id = usuario.id;
   const [_usuario, setUsuario] = useState({
     nombre: "",
     telefono: "",
@@ -36,8 +36,8 @@ const EditarPerfil = () => {
   useEffect(() => {
     console.log("_id del usuario: ", _id);
     if (usuario) {
-      console.log("Se ha recibido el usuario");
-      console.log(usuario.id);
+      console.log("Se ha recibido el usuario en Editar");
+      console.log(usuario);
       setUsuario({
         nombre: usuario.nombre || "",
         telefono: usuario.telefono || "",
@@ -65,7 +65,7 @@ const EditarPerfil = () => {
     console.log(usuario?.id);
     console.log("Resultado de la actualización", res);
     if (res.success) {
-      setUsuarioData({ ..._usuario, ...data });
+      setUsuarioData({ ...usuario, ...data }, usuario.id);
       router.back();
     }
   };
@@ -92,7 +92,9 @@ const EditarPerfil = () => {
             <View style={styles.contenedorAvatar}>
               <Image
                 source={
-                  _usuario?.imagen || require("../../assets/images/perfil.png")
+                  _usuario?.imagen
+                    ? _usuario.imagen
+                    : obtenerImagen(usuario?.imagen)
                 }
                 size={ancho(1)}
                 borderRadius={tema.radius.doublexxl}

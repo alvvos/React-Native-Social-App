@@ -19,7 +19,7 @@ const MainLayout = () => {
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("usuario: ", session?.user?.id);
+      console.log("usuario: ", session.user);
       if (session) {
         setAuth(session?.user);
         actualizarUsuario(session?.user);
@@ -33,7 +33,7 @@ const MainLayout = () => {
 
   const actualizarUsuario = async (usuario) => {
     let res = await getUsuarioData(usuario?.id);
-    if (res.success) setUsuarioData(res.data);
+    if (res.success) setUsuarioData(res.data, usuario?.id);
     console.log("usuario actualizado: ", res.data);
   };
 

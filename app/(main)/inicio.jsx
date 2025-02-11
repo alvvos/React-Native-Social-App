@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Pressable } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import Pantalla from "../../components/Pantalla";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
@@ -12,7 +12,11 @@ import Boton from "../../components/Boton";
 import Avatar from "../../components/Avatar";
 
 const Inicio = () => {
+  const { usuario } = useAuth();
   const router = useRouter();
+  useEffect(() => {
+    console.log("usuario en Inicio", usuario);
+  }, []);
 
   return (
     <Pantalla>
