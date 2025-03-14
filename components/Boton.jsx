@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
     height: alto(6),
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: tema.radius.sm,
   },
   texto: {
     fontSize: alto(2.5),

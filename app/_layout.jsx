@@ -14,21 +14,23 @@ const _layout = () => {
 };
 
 const MainLayout = () => {
-  const { setAuth, setUsuarioData } = useAuth();
+  const { user, setAuth, setUsuarioData } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("usuario: ", session.user);
-      if (session) {
-        setAuth(session?.user);
-        actualizarUsuario(session?.user);
-        router.replace("/inicio");
-      } else {
-        setAuth(null);
-        router.replace("/bienvenida");
-      }
-    });
+    {
+      supabase.auth.onAuthStateChange((_event, session) => {
+        console.log("usuario: ", session.user || "");
+        if (session) {
+          setAuth(session?.user);
+          actualizarUsuario(session?.user);
+          router.replace("/nuevaPublicacion");
+        } else {
+          setAuth(null);
+          router.replace("/");
+        }
+      });
+    }
   }, []);
 
   const actualizarUsuario = async (usuario) => {

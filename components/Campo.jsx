@@ -6,17 +6,11 @@ import { alto, ancho } from "../helpers/dimensiones";
 
 const Campo = (props) => {
   return (
-    <View
-      style={[
-        styles.contenedor,
-        props.contenedorStyles && props.contenedorStyles,
-      ]}
-    >
-      {props.icon && props.icon}
+    <View style={[styles.contenedor]}>
+      {props.icon}
       <TextInput
         style={{ flex: 1, fontSize: ancho(4) }}
         placeholderTextColor={tema.colors.textLight}
-        ref={props.inputRef && props.inputRef}
         {...props}
       />
     </View>
@@ -32,8 +26,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: tema.colors.text,
+    borderColor: "#ccc",
     paddingHorizontal: 18,
     gap: 12,
+    borderRadius: tema.radius.sm,
   },
 });

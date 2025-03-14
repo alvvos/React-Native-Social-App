@@ -20,7 +20,7 @@ const Login = () => {
 
   const onSubmit = async () => {
     if (!emailRef || !passwordRef) {
-      Alert.alert("Login", "Please fill all the fields");
+      Alert.alert("Aviso", "Completa todos los campos");
       return;
     }
 
@@ -38,7 +38,7 @@ const Login = () => {
 
     console.log("error", error);
     if (error) {
-      Alert.alert("Login", error.message);
+      Alert.alert("Aviso", error.message);
     }
   };
 

@@ -12,17 +12,19 @@ import Boton from "../../components/Boton";
 import Avatar from "../../components/Avatar";
 
 const Inicio = () => {
-  const { usuario } = useAuth();
+  const { usuario, setAuth } = useAuth();
   const router = useRouter();
-  useEffect(() => {
-    console.log("usuario en Inicio", usuario);
-  }, []);
 
   return (
     <Pantalla>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={{ fontSize: ancho(8), letterSpacing: 2 }}>
+          <Text
+            style={{
+              fontSize: ancho(8),
+              letterSpacing: 2,
+            }}
+          >
             Bienvenido
           </Text>
         </View>

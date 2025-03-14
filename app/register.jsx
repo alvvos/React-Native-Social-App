@@ -21,7 +21,7 @@ const Register = () => {
 
   const onSubmit = async () => {
     if (!emailRef || !passwordRef) {
-      Alert.alert("register", "Porfavor completa todos los campos");
+      Alert.alert("Aviso", "Porfavor completa todos los campos");
       return;
     }
 
@@ -30,8 +30,6 @@ const Register = () => {
     let password = passwordRef.current.trim();
 
     setLoading(true);
-
-    Alert.alert("Nombre:", name);
 
     const {
       data: { session },
@@ -48,12 +46,11 @@ const Register = () => {
     });
 
     setLoading(false);
-
-    //token
     console.log("session", session);
     console.log("error", session);
+
     if (error) {
-      Alert.alert("Sign up", error.message);
+      Alert.alert("Aviso", "Error en el registro");
     }
   };
 
