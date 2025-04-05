@@ -9,7 +9,6 @@ import {
   GestureHandlerRootView,
   ScrollView,
 } from "react-native-gesture-handler";
-import Icon from "../../assets/icons";
 import { tema } from "../../constants/tema";
 import { Image } from "expo-image";
 import Campo from "../../components/Campo";
@@ -19,6 +18,7 @@ import { updateUsuarioData } from "../../services/usuarios";
 import { Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { obtenerImagen, subirImagen } from "../../services/imagenes";
+import { fuentes } from "../../constants/fuentes";
 
 const EditarPerfil = () => {
   const { usuario, setAuth, setUsuarioData } = useAuth();
@@ -36,8 +36,7 @@ const EditarPerfil = () => {
   useEffect(() => {
     console.log("_id del usuario: ", _id);
     if (usuario) {
-      console.log("Se ha recibido el usuario en Editar");
-      console.log(usuario);
+      console.log("Se ha recibido el usuario en Editar", usuario);
       setUsuario({
         nombre: usuario.nombre || "",
         telefono: usuario.telefono || "",
@@ -91,11 +90,7 @@ const EditarPerfil = () => {
             <Cabecera titulo={"Editar Perfil"} atras={true}></Cabecera>
             <View style={styles.contenedorAvatar}>
               <Image
-                source={
-                  _usuario?.imagen
-                    ? _usuario.imagen
-                    : obtenerImagen(usuario?.imagen)
-                }
+                source={obtenerImagen(usuario?.imagen)}
                 size={ancho(1)}
                 borderRadius={tema.radius.doublexxl}
                 alignSelf="center"
@@ -108,7 +103,9 @@ const EditarPerfil = () => {
                 }}
               />
               <Pressable style={styles.boton} onPress={cambiarFoto}>
-                <Text>Cambiar foto</Text>
+                <Text style={{ fontFamily: fuentes.Poppins }}>
+                  Cambiar foto
+                </Text>
               </Pressable>
             </View>
             <View style={styles.contenedor}>
@@ -117,19 +114,15 @@ const EditarPerfil = () => {
                   fontSize: ancho(5),
                   color: tema.colors.text,
                   alignSelf: "center",
+                  fontFamily: fuentes.Poppins,
+                  marginTop: 10,
                 }}
               >
                 Completa tus datos
               </Text>
               <View style={([styles.contenedor], { marginTop: 30, gap: 20 })}>
                 <Campo
-                  icon={
-                    <Icon
-                      name="usuario"
-                      size={ancho(6)}
-                      color={tema.colors.text}
-                    />
-                  }
+                  //icon={}
                   placeholder="Nombre"
                   value={_usuario.nombre}
                   onChangeText={(value) =>
@@ -137,13 +130,7 @@ const EditarPerfil = () => {
                   }
                 />
                 <Campo
-                  icon={
-                    <Icon
-                      name="telefono"
-                      size={ancho(6)}
-                      color={tema.colors.text}
-                    />
-                  }
+                  //icon={}
                   placeholder="Teléfono"
                   value={_usuario.telefono}
                   onChangeText={(value) => {
@@ -151,13 +138,7 @@ const EditarPerfil = () => {
                   }}
                 />
                 <Campo
-                  icon={
-                    <Icon
-                      name="perfil"
-                      size={ancho(6)}
-                      color={tema.colors.text}
-                    />
-                  }
+                  //icon={}
                   placeholder="Direción"
                   value={_usuario.direccion}
                   onChangeText={(value) => {
@@ -175,9 +156,9 @@ const EditarPerfil = () => {
                 />
               </View>
               <Boton
-                botonStyle={{ marginTop: 20 }}
+                botonStyles={{ marginTop: 20 }}
                 titulo="Actualizar"
-                onPress={cambiarDatos}
+                alPresionar={cambiarDatos}
               ></Boton>
             </View>
           </ScrollView>
@@ -208,6 +189,7 @@ const styles = StyleSheet.create({
     backgroundColor: tema.colors.darklight,
     borderRadius: tema.radius.sm,
     alignSelf: "center",
+    fontFamily: fuentes.Poppins,
   },
   contenedorAvatar: {
     height: alto(30),

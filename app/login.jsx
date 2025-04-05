@@ -1,7 +1,6 @@
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import React, { useRef, useState } from "react";
 import Pantalla from "../components/Pantalla";
-import Icon from "../assets/icons";
 import { tema } from "../constants/tema";
 import { StatusBar } from "expo-status-bar";
 import Atras from "../components/Atras";
@@ -16,7 +15,6 @@ const Login = () => {
   const router = useRouter();
   const emailRef = useRef("");
   const passwordRef = useRef("");
-  const [loading, setLoading] = useState(false);
 
   const onSubmit = async () => {
     if (!emailRef || !passwordRef) {
@@ -26,17 +24,11 @@ const Login = () => {
 
     let email = emailRef.current.trim();
     let password = passwordRef.current.trim();
-
-    setLoading(true);
-
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    setLoading(false);
-
-    console.log("error", error);
     if (error) {
       Alert.alert("Aviso", error.message);
     }
@@ -53,31 +45,17 @@ const Login = () => {
           </View>
           <View style={styles.form}>
             <Text style={{ fontSize: alto(2.5), color: tema.colors.text }}>
-              Ingresa tus detalles a continuación.
+              Ingresa tus datos a continuación.
             </Text>
             <Campo
-              icon={
-                <Icon
-                  name="usuario"
-                  size={26}
-                  strokeWidth={2}
-                  color={tema.colors.text}
-                />
-              }
+              //icon={}
               placeholder="Email"
               onChangeText={(value) => {
                 emailRef.current = value;
               }}
             />
             <Campo
-              icon={
-                <Icon
-                  name="perfil"
-                  size={26}
-                  strokeWidth={2}
-                  color={tema.colors.text}
-                />
-              }
+              //icon={}
               placeholder="Contraseña"
               secureTextEntry
               onChangeText={(value) => {
@@ -86,7 +64,7 @@ const Login = () => {
             />
           </View>
           <Text style={styles.forgotPassword}>Has olvidado tu contraseña?</Text>
-          <Boton titulo={"Entrar"} loading={loading} onPress={onSubmit}></Boton>
+          <Boton titulo={"Entrar"} alPresionar={onSubmit} />
           <View style={styles.footer}>
             <Text style={styles.footerText}>¿No tienes una cuenta?</Text>
             <Pressable

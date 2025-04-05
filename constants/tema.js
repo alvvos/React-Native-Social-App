@@ -6,6 +6,8 @@ export const tema = {
     darklight: "#E1E1E1",
     rose: "rgba(255, 0, 128, 0.5)",
     text: "#494949",
+    iconos: "rgb(207, 4, 99)",
+    iconosDark: "rgb(44, 44, 44)",
   },
   fonts: {
     light: "300",

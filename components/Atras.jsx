@@ -1,12 +1,17 @@
 import { Pressable, StyleSheet, Text } from "react-native";
 import React from "react";
 import { tema } from "../constants/tema";
-import Icon from "../assets/icons";
+import { fuentes } from "../constants/fuentes";
 
 const Atras = ({ router }) => {
   return (
     <Pressable onPress={() => router.back()} style={styles.boton}>
-      <Text style={{ color: tema.colors.text, fontWeight: tema.fonts.bold }}>
+      <Text
+        style={{
+          color: tema.colors.text,
+          fontFamily: fuentes.Poppins,
+        }}
+      >
         Atrás
       </Text>
     </Pressable>

@@ -5,6 +5,7 @@ import { supabase } from "../lib/supabase";
 import { Alert } from "react-native";
 import { ancho } from "../helpers/dimensiones";
 import { useRouter } from "expo-router";
+import { fuentes } from "../constants/fuentes";
 
 const Desplegable = () => {
   const [menuVisible, setMenuVisible] = useState(false);
@@ -52,7 +53,14 @@ const Desplegable = () => {
         onPress={() => setMenuVisible(!menuVisible)}
         style={styles.boton}
       >
-        <Text style={styles.textoBoton}>Menú</Text>
+        <Text
+          style={
+            ([styles.textoBoton],
+            { fontFamily: fuentes.Poppins, color: "white" })
+          }
+        >
+          Menú
+        </Text>
       </TouchableOpacity>
 
       {menuVisible && (
@@ -63,7 +71,9 @@ const Desplegable = () => {
               onPress={() => manejarOpcionSeleccionada(opcion.valor)}
               style={styles.opcion}
             >
-              <Text>{opcion.etiqueta}</Text>
+              <Text style={{ fontFamily: fuentes.Poppins }}>
+                {opcion.etiqueta}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -84,6 +94,7 @@ const styles = StyleSheet.create({
   textoBoton: {
     color: "white",
     fontWeight: tema.fonts.bold,
+    fontFamily: fuentes.PoppinsBold,
   },
   menu: {
     position: "absolute",
@@ -94,13 +105,16 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 5,
     zIndex: 1,
-    width: ancho(30),
+    width: ancho(40),
     alignItems: "center",
     marginTop: 10,
     padding: 5,
+    fontFamily: fuentes.Poppins,
   },
   opcion: {
-    padding: 5,
+    marginTop: 10,
+    margin: 2,
+    fontFamily: fuentes.Poppins,
   },
 });
 

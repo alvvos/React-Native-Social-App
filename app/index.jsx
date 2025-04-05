@@ -1,21 +1,30 @@
 import { StyleSheet, Text, View, Image, Pressable } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import Pantalla from "../components/Pantalla";
 import { StatusBar } from "expo-status-bar";
 import { ancho, alto } from "../helpers/dimensiones";
 import { tema } from "../constants/tema";
 import Boton from "../components/Boton";
 import { useRouter } from "expo-router";
+import { cargarFuentes, fuentes } from "../constants/fuentes";
 
 const Index = () => {
-  const router = useRouter();
+  useEffect(() => {
+    const cargar = async () => {
+      await cargarFuentes();
+      console.log("fuentes cargadas");
+    };
 
+    cargar();
+  }, []);
+
+  const router = useRouter();
   return (
-    <Pantalla bg="white">
+    <Pantalla>
       <StatusBar style="dark" />
       <View style={styles.container}>
         <View style={{ gap: 20 }}>
-          <Text style={styles.titulo}>Bienvenidos!</Text>
+          <Text style={styles.titulo}>Bienvenido/a</Text>
           <Text style={styles.punchLine}>A mi proyecto final de grado.</Text>
         </View>
         <Image
@@ -75,7 +84,7 @@ const styles = StyleSheet.create({
     color: tema.colors.text,
     fontSize: alto(5),
     textAlign: "center",
-
+    fontFamily: fuentes.PoppinsBold,
     fontWeight: tema.fonts.extrabold,
   },
   punchLine: {
@@ -83,6 +92,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: ancho(3),
     fontSize: alto(2),
     color: tema.colors.text,
+    fontFamily: fuentes.Poppins,
   },
   footer: {
     gap: 30,

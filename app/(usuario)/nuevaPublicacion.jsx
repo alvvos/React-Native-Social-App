@@ -12,7 +12,6 @@ import { tema } from "../../constants/tema";
 import { useAuth } from "../../context/AuthContext";
 import { obtenerImagen, supabase_url } from "../../services/imagenes";
 import { Image } from "react-native";
-import Icon from "../../assets/icons";
 import { useRouter } from "expo-router";
 import { TextInput } from "react-native-paper";
 import Badge from "../../components/Badge";
@@ -20,6 +19,7 @@ import Boton from "../../components/Boton";
 import * as ImagePicker from "expo-image-picker";
 import { Video } from "expo-av";
 import { use } from "react";
+import { fuentes } from "../../constants/fuentes";
 
 const nuevaPublicacion = () => {
   const { usuario, setAuth } = useAuth();
@@ -40,7 +40,13 @@ const nuevaPublicacion = () => {
     };
 
     let res = await crearOActualizarPublicacion(data);
-    console.log("res: ", res);
+    if (res.success) {
+      setArchivo(null);
+      textoRef.current = "";
+      router.push("inicio");
+    } else {
+      Alert.alert("Aviso", "Ha habido un problema al publicar la publicación");
+    }
   };
 
   const getUri = (archivo) => {
@@ -110,7 +116,6 @@ const nuevaPublicacion = () => {
                   justifyContent: "center",
                 }}
               >
-                <Icon name="usuario" size={alto(4)} color={tema.colors.text} />
                 <Text
                   style={{
                     fontSize: ancho(7),
@@ -123,13 +128,13 @@ const nuevaPublicacion = () => {
               </View>
               <Image
                 source={obtenerImagen(usuario?.imagen)}
-                size={ancho(1)}
+                size={ancho(2)}
                 borderRadius={tema.radius.doublexxl}
                 alignSelf="right"
                 transition={100}
                 style={{
-                  width: ancho(25),
-                  height: ancho(25),
+                  width: ancho(40),
+                  height: ancho(40),
                   marginTop: 25,
                 }}
               />
@@ -154,12 +159,12 @@ const nuevaPublicacion = () => {
                 contentStyle={{
                   color: "#000",
                   fontSize: 15,
-                  fontWeight: "bold",
                   textAlignVertical: "top",
                   textAlign: "left",
                   padding: 10,
                   backgroundColor: "#fff",
                   height: 200,
+                  fontFamily: fuentes.Poppins,
                 }}
               />
             </View>
@@ -188,12 +193,12 @@ const nuevaPublicacion = () => {
                 ) : (
                   <Image
                     source={{ uri: getUri(archivo) }}
-                    size={ancho(1)}
-                    borderRadius={tema.radius.doublexxl}
+                    size={ancho(2)}
+                    borderRadius={tema.radius.md}
                     alignSelf="center"
                     transition={100}
                     style={{
-                      width: ancho(80),
+                      width: ancho(85),
                       height: ancho(50),
                       marginTop: 30,
                     }}
@@ -226,9 +231,9 @@ const nuevaPublicacion = () => {
               </View>
             </View>
             <Boton
-              botonStyle={{ marginTop: 30 }}
+              botonStyles={{ marginTop: 30 }}
               titulo="Publicar"
-              onPress={Publicar}
+              alPresionar={Publicar}
             ></Boton>
           </ScrollView>
         </View>

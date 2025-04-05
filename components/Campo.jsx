@@ -3,13 +3,14 @@ import React from "react";
 import { TextInput } from "react-native-gesture-handler";
 import { tema } from "../constants/tema";
 import { alto, ancho } from "../helpers/dimensiones";
+import { fuentes } from "../constants/fuentes";
 
 const Campo = (props) => {
   return (
     <View style={[styles.contenedor]}>
       {props.icon}
       <TextInput
-        style={{ flex: 1, fontSize: ancho(4) }}
+        style={{ flex: 1, fontSize: ancho(4), fontFamily: fuentes.Poppins }}
         placeholderTextColor={tema.colors.textLight}
         {...props}
       />

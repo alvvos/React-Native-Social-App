@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 import { getUsuarioData } from "../services/usuarios";
 import { updateUsuarioData } from "../services/usuarios";
+import { cargarFuentes } from "../constants/fuentes";
 
 const _layout = () => {
   return (
@@ -14,23 +15,23 @@ const _layout = () => {
 };
 
 const MainLayout = () => {
-  const { user, setAuth, setUsuarioData } = useAuth();
+  const { usuario, setAuth, setUsuarioData } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    {
-      supabase.auth.onAuthStateChange((_event, session) => {
-        console.log("usuario: ", session.user || "");
-        if (session) {
-          setAuth(session?.user);
-          actualizarUsuario(session?.user);
-          router.replace("/nuevaPublicacion");
+    const { data: subscription } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        console.log("usuario_sesion: ", session?.user || "");
+        if (session?.user) {
+          setAuth(session.user);
+          await actualizarUsuario(session.user);
+          router.replace("/inicio");
         } else {
           setAuth(null);
           router.replace("/");
         }
-      });
-    }
+      }
+    );
   }, []);
 
   const actualizarUsuario = async (usuario) => {

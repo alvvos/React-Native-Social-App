@@ -5,6 +5,7 @@ import { tema } from "../constants/tema";
 import Atras from "./Atras";
 import { useRouter } from "expo-router";
 import Desplegable from "./Desplegable";
+import { fuentes } from "../constants/fuentes";
 
 const Cabecera = ({ titulo, atras = false, mb = 10 }) => {
   const router = useRouter();
@@ -36,6 +37,7 @@ const styles = StyleSheet.create({
   },
   titulo: {
     fontSize: alto(2.7),
+    fontFamily: fuentes.Poppins,
     color: tema.colors.text,
     letterSpacing: 1.5,
   },

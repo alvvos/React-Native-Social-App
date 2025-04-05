@@ -1,12 +1,18 @@
 import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { tema } from "../constants/tema";
 import { Pressable } from "react-native";
+import { fuentes } from "../constants/fuentes";
 
 const Badge = ({ texto, onPress = {} }) => {
   return (
     <Pressable onPress={onPress} style={styles.boton}>
-      <Text style={{ color: tema.colors.text, fontWeight: tema.fonts.bold }}>
+      <Text
+        style={{
+          color: tema.colors.text,
+          fontFamily: fuentes.Poppins,
+        }}
+      >
         {texto}
       </Text>
     </Pressable>

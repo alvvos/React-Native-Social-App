@@ -2,11 +2,20 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { tema } from "../constants/tema";
 import { alto } from "../helpers/dimensiones";
+import { fuentes } from "../constants/fuentes";
 
-const Boton = ({ botonStyle, textoStyle, titulo = "", onPress = () => {} }) => {
+const Boton = ({ botonStyles, titulo = "", alPresionar = () => {} }) => {
   return (
-    <Pressable onPress={onPress} style={[styles.boton, botonStyle]}>
-      <Text style={[styles.texto, textoStyle]}>{titulo}</Text>
+    <Pressable onPress={alPresionar} style={[styles.boton, botonStyles]}>
+      <Text
+        style={{
+          fontFamily: fuentes.PoppinsBold,
+          color: "white",
+          fontSize: alto(2.5),
+        }}
+      >
+        {titulo}
+      </Text>
     </Pressable>
   );
 };

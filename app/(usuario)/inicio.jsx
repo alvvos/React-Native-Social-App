@@ -1,40 +1,47 @@
-import { StyleSheet, Text, View, Pressable } from "react-native";
+import { StyleSheet, Text, View, Pressable, Image } from "react-native";
 import React, { useEffect } from "react";
 import Pantalla from "../../components/Pantalla";
 import { useAuth } from "../../context/AuthContext";
-import { supabase } from "../../lib/supabase";
 import { ancho, alto } from "../../helpers/dimensiones";
 import { tema } from "../../constants/tema";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import Icon from "../../assets/icons";
-import Boton from "../../components/Boton";
-import Avatar from "../../components/Avatar";
+import { buscarPublicacion } from "../../services/publicaciones";
+import { FlatList } from "react-native";
+import Publicacion from "../../components/Publicacion";
+import { Ionicons } from "@expo/vector-icons";
 
 const Inicio = () => {
   const { usuario, setAuth } = useAuth();
   const router = useRouter();
+  const [publicaciones, setPublicaciones] = useState([]);
+
+  useEffect(() => {
+    getPublicaciones();
+  }, []);
+
+  const getPublicaciones = async () => {
+    let res = await buscarPublicacion();
+    if (res.success) {
+      setPublicaciones(res.data);
+    }
+  };
 
   return (
     <Pantalla>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text
-            style={{
-              fontSize: ancho(8),
-              letterSpacing: 2,
-            }}
-          >
-            Bienvenido
-          </Text>
+          <Image
+            source={require("../../assets/images/eep.png")}
+            style={{ width: 80, height: 80 }}
+          />
         </View>
-        <View style={styles.icons}>
+        <View style={styles.iconos}>
           <Pressable onPress={() => router.push("notificaciones")}>
-            <Icon
-              name="campana"
+            <Ionicons
+              name="notifications"
               size={alto(4)}
-              strokeWidth={2}
-              color={tema.colors.text}
+              color={tema.colors.iconos}
             />
           </Pressable>
           <Pressable
@@ -42,26 +49,25 @@ const Inicio = () => {
               router.push("nuevaPublicacion");
             }}
           >
-            <Icon
-              name="subir"
-              size={alto(4)}
-              strokeWidth={2}
-              color={tema.colors.text}
-            />
+            <Ionicons name="camera" size={alto(4)} color={tema.colors.iconos} />
           </Pressable>
           <Pressable
             onPress={() => {
               router.push("perfil");
             }}
           >
-            <Icon
-              name="perfil"
-              size={alto(4)}
-              strokeWidth={2}
-              color={tema.colors.primary}
-            />
+            <Ionicons name="person" size={alto(4)} color={tema.colors.iconos} />
           </Pressable>
         </View>
+        <FlatList
+          data={publicaciones}
+          showVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listStyle}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <Publicacion item={item} usuarioActual={usuario} router={router} />
+          )}
+        />
       </View>
     </Pantalla>
   );
@@ -86,18 +92,22 @@ const styles = StyleSheet.create({
     marginHorizontal: ancho(4),
     marginBottom: 10,
   },
-  icons: {
+  iconos: {
+    width: "100%",
     position: "absolute",
     bottom: 0,
     flexDirection: "row",
     justifyContent: "center",
     alignSelf: "center",
     gap: ancho(30),
-    padding: 30,
+    padding: 20,
+    zIndex: 10,
+    backgroundColor: "#fff",
   },
   listStyle: {
     paddingTop: 20,
     paddingBottom: ancho(4),
+    paddingBottom: 20,
   },
   noPosts: {
     fontSize: alto(2),

@@ -1,7 +1,6 @@
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import React, { useRef, useState } from "react";
 import Pantalla from "../components/Pantalla";
-import Icon from "../assets/icons";
 import { tema } from "../constants/tema";
 import { StatusBar } from "expo-status-bar";
 import Atras from "../components/Atras";
@@ -68,42 +67,21 @@ const Register = () => {
               Por favor ingresa tus detalles a continuación
             </Text>
             <Campo
-              icon={
-                <Icon
-                  name="perfil"
-                  size={26}
-                  strokeWidth={2}
-                  color={tema.colors.text}
-                />
-              }
+              //icon={}
               placeholder="Nombre"
               onChangeText={(value) => {
                 nameRef.current = value;
               }}
             />
             <Campo
-              icon={
-                <Icon
-                  name="perfil"
-                  size={26}
-                  strokeWidth={2}
-                  color={tema.colors.text}
-                />
-              }
+              //icon={}
               placeholder="Email"
               onChangeText={(value) => {
                 emailRef.current = value;
               }}
             />
             <Campo
-              icon={
-                <Icon
-                  name="perfil"
-                  size={26}
-                  strokeWidth={2}
-                  color={tema.colors.text}
-                />
-              }
+              //icon={}
               placeholder="Contraseña"
               secureTextEntry
               onChangeText={(value) => {
