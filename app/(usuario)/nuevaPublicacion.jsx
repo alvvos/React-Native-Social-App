@@ -61,7 +61,7 @@ const nuevaPublicacion = () => {
     let mediaConfig = {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [16, 9],
+      aspect: [16, 16],
       quality: 1,
     };
 
@@ -109,27 +109,10 @@ const nuevaPublicacion = () => {
                 justifyContent: "space-evenly",
               }}
             >
-              <View
-                style={{
-                  flexDirection: "row",
-                  marginTop: 25,
-                  justifyContent: "center",
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: ancho(7),
-                    marginLeft: 10,
-                    fontWeight: tema.fonts.light,
-                  }}
-                >
-                  {usuario?.nombre}
-                </Text>
-              </View>
               <Image
                 source={obtenerImagen(usuario?.imagen)}
                 size={ancho(2)}
-                borderRadius={tema.radius.doublexxl}
+                borderRadius={100}
                 alignSelf="right"
                 transition={100}
                 style={{
@@ -204,15 +187,17 @@ const nuevaPublicacion = () => {
                     }}
                   />
                 )}
-                <View
-                  style={{
-                    marginTop: 20,
-                    marginLeft: 15,
-                    marginBottom: 0,
+                <Badge
+                  estilosExtra={{
+                    marginLeft: 0,
+                    position: "absolute",
+                    top: 40,
+                    right: 10,
                   }}
-                >
-                  <Badge texto="Borrar" onPress={() => setArchivo(null)} />
-                </View>
+                  icono="trash"
+                  color="rgb(180, 42, 42)"
+                  onPress={() => setArchivo(null)}
+                />
               </View>
             )}
             <View
@@ -227,7 +212,11 @@ const nuevaPublicacion = () => {
               }}
             >
               <View style={{ flexDirection: "row", gap: 10 }}>
-                <Badge texto="Subir archivo" onPress={subirArchivo} />
+                <Badge
+                  icono="folder"
+                  onPress={subirArchivo}
+                  estilosExtra={{ marginTop: 0 }}
+                />
               </View>
             </View>
             <Boton

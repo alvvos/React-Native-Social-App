@@ -78,7 +78,14 @@ const Perfil = () => {
               </View>
             </View>
           </View>
-          <View style={{ marginTop: alto(0) }}>
+          <View
+            style={{
+              marginTop: alto(0),
+              flex: 1,
+              backgroundColor: "rgba(238, 238, 238, 0.5)",
+              borderRadius: 20,
+            }}
+          >
             <Text style={estilos.tituloPublicaciones}>Mis Publicaciones</Text>
 
             {publicaciones.length > 0 ? (
@@ -120,7 +127,7 @@ const estilos = StyleSheet.create({
   avatar: {
     width: ancho(30),
     height: ancho(30),
-    borderRadius: tema.radius.doublexxl,
+    borderRadius: 100,
     marginVertical: alto(2),
   },
   datosContacto: {
@@ -132,6 +139,15 @@ const estilos = StyleSheet.create({
     alignItems: "center",
     gap: ancho(2),
     marginBottom: alto(1),
+    shadowColor: "black",
+    shadowOpacity: 0.26,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 10,
+    elevation: 3,
+    backgroundColor: "white",
+    padding: 12,
+    margin: 5,
+    borderRadius: 15,
   },
   textoDato: {
     fontSize: ancho(4),
@@ -163,14 +179,14 @@ const estilos = StyleSheet.create({
     margin: ancho(0.2),
   },
   imagenPublicacion: {
-    width: "9%",
+    width: "90%",
     height: "90%",
     borderRadius: tema.radius.md,
     aspectRatio: 1,
   },
   sinPublicaciones: {
     textAlign: "center",
-    marginTop: alto(3),
+    marginTop: alto(12),
     fontSize: alto(2.2),
     color: tema.colors.gris,
     fontFamily: fuentes.Poppins,

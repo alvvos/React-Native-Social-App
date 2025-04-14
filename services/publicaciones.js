@@ -168,3 +168,53 @@ export const agregarLikePorIdPublicacion = async (idPublicacion, idUsuario) => {
     };
   }
 };
+
+export const obtenerComentariosPorPublicacion = async (idPublicacion) => {
+  try {
+    const { data, error } = await supabase
+      .from("comentarios")
+      .select(
+        `*,
+        usuario:usuarios(id, nombre, imagen)
+        `
+      )
+      .eq("id_publicacion", idPublicacion)
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      console.log("Error al obtener comentarios de la publicación: ", error);
+      return { success: false, error: error };
+    }
+    return { success: true, data: data };
+  } catch (error) {
+    console.log("Error al obtener comentarios de la publicación: ", error);
+    return { success: false, error: error };
+  }
+};
+
+export const agregarComentario = async (idPublicacion, idUsuario, cuerpo) => {
+  try {
+    const { data, error } = await supabase
+      .from("comentarios")
+      .insert({
+        id_publicacion: idPublicacion,
+        id_usuario: idUsuario,
+        cuerpo: cuerpo,
+      })
+      .select(
+        `*,
+        usuario:usuarios(id, nombre, imagen)
+        `
+      )
+      .single();
+
+    if (error) {
+      console.log("Error al agregar comentario: ", error);
+      return { success: false, error: error };
+    }
+    return { success: true, data: data };
+  } catch (error) {
+    console.log("Error al agregar comentario: ", error);
+    return { success: false, error: error };
+  }
+};

@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, Text } from "react-native";
 import React from "react";
 import { tema } from "../constants/tema";
 import { fuentes } from "../constants/fuentes";
+import { Ionicons } from "@expo/vector-icons";
 
 const Atras = ({ router }) => {
   return (
@@ -12,7 +13,7 @@ const Atras = ({ router }) => {
           fontFamily: fuentes.Poppins,
         }}
       >
-        Atrás
+        <Ionicons name="arrow-back" size={20} />
       </Text>
     </Pressable>
   );

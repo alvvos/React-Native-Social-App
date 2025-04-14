@@ -92,7 +92,7 @@ const EditarPerfil = () => {
               <Image
                 source={obtenerImagen(usuario?.imagen)}
                 size={ancho(1)}
-                borderRadius={tema.radius.doublexxl}
+                borderRadius={100}
                 alignSelf="center"
                 transition={100}
                 style={{

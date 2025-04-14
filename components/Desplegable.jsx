@@ -6,6 +6,7 @@ import { Alert } from "react-native";
 import { ancho } from "../helpers/dimensiones";
 import { useRouter } from "expo-router";
 import { fuentes } from "../constants/fuentes";
+import { Ionicons } from "@expo/vector-icons";
 
 const Desplegable = () => {
   const [menuVisible, setMenuVisible] = useState(false);
@@ -59,7 +60,7 @@ const Desplegable = () => {
             { fontFamily: fuentes.Poppins, color: "white" })
           }
         >
-          Menú
+          <Ionicons name="menu" size={20} />
         </Text>
       </TouchableOpacity>
 

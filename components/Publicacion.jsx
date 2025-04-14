@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, Touchable, View } from "react-native";
+import { Image, StyleSheet, Text, View, Modal, TextInput } from "react-native";
 import React from "react";
 import { ancho, alto } from "../helpers/dimensiones";
 import { tema } from "../constants/tema";
@@ -13,12 +13,18 @@ import { Pressable } from "react-native";
 import {
   buscarLikesPorIdPublicacion,
   agregarLikePorIdPublicacion,
+  agregarComentario,
+  obtenerComentariosPorPublicacion,
 } from "../services/publicaciones";
-import { use } from "react";
+import { crearNotificacion } from "../services/notificaciones";
+import { useAuth } from "../context/AuthContext";
 
 const Publicacion = ({ item, usuarioActual, router }) => {
   const [likes, setLikes] = useState([]);
-  const [comments, setComments] = useState([]);
+  const [likeYaExistente, setLikeYaExistente] = useState(false);
+  const [comentarios, setComentarios] = useState([]);
+  const [comentariosModal, setComentariosModal] = useState(false);
+  const [nuevoComentario, setNuevoComentario] = useState("");
 
   useEffect(() => {
     const cargarLikes = async () => {
@@ -27,12 +33,26 @@ const Publicacion = ({ item, usuarioActual, router }) => {
         setLikes(resultado.data);
       }
     };
-    cargarLikes();
-  }, [item.id]);
 
-  useEffect(() => {
-    console.log("likes: ", likes.length);
-  }, [likes]);
+    const verificarLike = async () => {
+      {
+        likes.map((like) => {
+          if (like.id_usuario === usuarioActual.id) {
+            setLikeYaExistente(true);
+          }
+        });
+      }
+    };
+    cargarLikes();
+    verificarLike();
+  }, [item.id, likes, comentarios]);
+
+  const cargarComentarios = async () => {
+    const resultado = await obtenerComentariosPorPublicacion(item.id);
+    if (resultado.success) {
+      setComentarios(resultado.data);
+    }
+  };
 
   const fechaParseada = moment(item?.created_at).format("D MMM");
 
@@ -43,10 +63,52 @@ const Publicacion = ({ item, usuarioActual, router }) => {
     );
     if (resultado.success && resultado.accion === "like_agregado") {
       setLikes(resultado.data);
+
+      const response = await crearNotificacion({
+        id_emisor: usuarioActual.id,
+        id_receptor: item.id_usuario,
+        titulo: "Nuevo like",
+        cuerpo: `${usuarioActual.nombre} le dio like a tu publicación`,
+      });
+
+      if (response.success) {
+        console.log(response.data);
+      }
     }
   };
 
   const verDetalles = () => {};
+
+  const toggleComentariosModal = async () => {
+    if (!comentariosModal) {
+      await cargarComentarios();
+    }
+    setComentariosModal(!comentariosModal);
+  };
+
+  const publicarComentario = async () => {
+    if (nuevoComentario.trim() === "") return;
+
+    const resultado = await agregarComentario(
+      item.id,
+      usuarioActual.id,
+      nuevoComentario
+    );
+
+    if (resultado.success) {
+      await cargarComentarios();
+      const response = await crearNotificacion({
+        id_emisor: usuarioActual.id,
+        id_receptor: item.id_usuario,
+        titulo: "Nuevo comentario",
+        cuerpo: `${usuarioActual.nombre} comentó "${nuevoComentario}"`,
+      });
+      if (response.success) {
+        console.log(response.data);
+        setNuevoComentario("");
+      }
+    }
+  };
 
   return (
     <View style={[styles.contendor]}>
@@ -105,21 +167,33 @@ const Publicacion = ({ item, usuarioActual, router }) => {
             }}
           >
             <Pressable onPress={manejarLike}>
-              <Ionicons
-                name="heart-outline"
-                size={23}
-                color={tema.colors.iconos}
-              />
+              {likeYaExistente ? (
+                <Ionicons name="heart" size={23} color={tema.colors.iconos} />
+              ) : (
+                <Ionicons
+                  name="heart-outline"
+                  size={23}
+                  color={tema.colors.iconos}
+                />
+              )}
             </Pressable>
             <Text style={{ fontFamily: fuentes.Poppins, marginTop: 3 }}>
               {likes?.length}
             </Text>
           </View>
-          <Ionicons
-            name="chatbubble-outline"
-            size={21}
-            color={tema.colors.iconosDark}
-          />
+          <TouchableOpacity
+            style={{ flexDirection: "row", alignItems: "center", gap: 5 }}
+            onPress={toggleComentariosModal}
+          >
+            <Ionicons
+              name="chatbubble-outline"
+              size={21}
+              color={tema.colors.iconosDark}
+            />
+            <Text style={{ fontFamily: fuentes.Poppins, marginTop: 3 }}>
+              {comentarios?.length}
+            </Text>
+          </TouchableOpacity>
           <Ionicons
             name="cloud-upload-outline"
             size={23}
@@ -136,6 +210,65 @@ const Publicacion = ({ item, usuarioActual, router }) => {
           </Text>
         </View>
       </View>
+
+      <Modal
+        visible={comentariosModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={toggleComentariosModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContenedor}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Comentarios</Text>
+              <TouchableOpacity onPress={toggleComentariosModal}>
+                <Ionicons name="close" size={24} color={tema.colors.text} />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.comentariosLista}>
+              {comentarios.length > 0 ? (
+                comentarios.map((comentario) => (
+                  <View key={comentario.id} style={styles.comentarioItem}>
+                    <Image
+                      source={obtenerImagen(comentario.usuario?.imagen)}
+                      style={styles.comentarioUserImage}
+                    />
+                    <View style={styles.comentarioContent}>
+                      <Text style={styles.comentarioUsername}>
+                        {comentario.usuario?.nombre}
+                      </Text>
+                      <Text style={styles.comentarioText}>
+                        {comentario.cuerpo}
+                      </Text>
+                    </View>
+                  </View>
+                ))
+              ) : (
+                <Text style={styles.noComentariosText}>
+                  No hay comentarios aún
+                </Text>
+              )}
+            </View>
+
+            <View style={styles.comentarioInputContenedor}>
+              <TextInput
+                style={styles.comentarioInput}
+                placeholder="Escribe un comentario..."
+                value={nuevoComentario}
+                onChangeText={setNuevoComentario}
+                multiline
+              />
+              <TouchableOpacity
+                style={styles.comentarioButton}
+                onPress={publicarComentario}
+              >
+                <Ionicons name="send" size={20} color="white" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -169,5 +302,83 @@ const styles = StyleSheet.create({
     color: tema.colors.text,
     marginTop: 10,
     fontFamily: fuentes.Poppins,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "flex-end",
+  },
+  modalContenedor: {
+    backgroundColor: "white",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    height: "70%",
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 15,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontFamily: fuentes.PoppinsSemiBold,
+  },
+  comentariosLista: {
+    flex: 1,
+    marginBottom: 15,
+  },
+  comentarioItem: {
+    flexDirection: "row",
+    marginBottom: 15,
+    alignItems: "flex-start",
+  },
+  comentarioUserImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  comentarioContent: {
+    flex: 1,
+  },
+  comentarioUsername: {
+    fontFamily: fuentes.PoppinsSemiBold,
+    fontSize: 14,
+  },
+  comentarioText: {
+    fontFamily: fuentes.Poppins,
+    fontSize: 14,
+    marginTop: 2,
+  },
+  noComentariosText: {
+    textAlign: "center",
+    marginTop: 20,
+    fontFamily: fuentes.Poppins,
+    color: tema.colors.textSecondary,
+  },
+  comentarioInputContenedor: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderTopWidth: 1,
+    borderTopColor: tema.colors.border,
+    paddingTop: 20,
+  },
+  comentarioInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: tema.colors.border,
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    fontFamily: fuentes.Poppins,
+    maxHeight: 100,
+  },
+  comentarioButton: {
+    backgroundColor: tema.colors.primary,
+    borderRadius: 20,
+    padding: 10,
+    marginLeft: 10,
   },
 });

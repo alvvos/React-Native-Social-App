@@ -3,17 +3,18 @@ import React, { useEffect } from "react";
 import { tema } from "../constants/tema";
 import { Pressable } from "react-native";
 import { fuentes } from "../constants/fuentes";
+import { Ionicons } from "@expo/vector-icons";
 
-const Badge = ({ texto, onPress = {} }) => {
+const Badge = ({ icono, onPress = {}, estilosExtra, color }) => {
   return (
-    <Pressable onPress={onPress} style={styles.boton}>
+    <Pressable onPress={onPress} style={[styles.boton, estilosExtra]}>
       <Text
         style={{
-          color: tema.colors.text,
+          color: color,
           fontFamily: fuentes.Poppins,
         }}
       >
-        {texto}
+        <Ionicons name={icono} size={20} />
       </Text>
     </Pressable>
   );
@@ -26,6 +27,6 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     padding: 10,
     borderRadius: tema.radius.sm,
-    backgroundColor: "rgba(0,0,0,0.07)",
+    backgroundColor: "rgb(233, 233, 233)",
   },
 });

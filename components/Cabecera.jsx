@@ -38,8 +38,6 @@ const styles = StyleSheet.create({
   titulo: {
     fontSize: alto(2.7),
     fontFamily: fuentes.Poppins,
-    color: tema.colors.text,
-    letterSpacing: 1.5,
   },
   atras: {
     position: "absolute",
