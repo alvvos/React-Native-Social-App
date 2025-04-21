@@ -4,6 +4,7 @@ import {
   Text,
   FlatList,
   ActivityIndicator,
+  Pressable,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Pantalla from "../../components/Pantalla";
@@ -20,75 +21,110 @@ const Notificaciones = () => {
   const { usuario } = useAuth();
   const [notificaciones, setNotificaciones] = useState([]);
   const [cargando, setCargando] = useState(true);
+  const [refrescando, setRefrescando] = useState(false);
 
   useEffect(() => {
-    const obtenerNotificaciones = async () => {
-      if (!usuario?.id) return;
-
-      try {
-        setCargando(true);
-        const { data, error } = await supabase
-          .from("notificaciones")
-          .select("*")
-          .eq("id_receptor", usuario.id)
-          .order("created_at", { ascending: false });
-
-        if (error) throw error;
-
-        setNotificaciones(data);
-      } catch (error) {
-        console.error("Error al cargar notificaciones:", error);
-      } finally {
-        setCargando(false);
-      }
-    };
-
     obtenerNotificaciones();
   }, [usuario?.id]);
 
-  const renderizarNotificacion = ({ item }) => (
-    <View style={estilos.itemNotificacion}>
-      <View style={estilos.iconoNotificacion}>
-        <Ionicons
-          name={obtenerIconoPorTipo(item.titulo)}
-          size={alto(3.5)}
-          color={tema.colors.primary}
-        />
-      </View>
-      <View style={estilos.contenidoNotificacion}>
-        <View style={{ flex: 1, flexDirection: "column" }}>
-          <Text style={estilos.tituloNotificacion}>{item.titulo}</Text>
-          <Text style={estilos.mensajeNotificacion}>{item.cuerpo}</Text>
-        </View>
-      </View>
-    </View>
-  );
+  const obtenerNotificaciones = async () => {
+    if (!usuario?.id) return;
 
-  const obtenerIconoPorTipo = (titulo) => {
-    switch (titulo) {
-      case "Nuevo comentario":
-        return "chatbox";
-      case "Nuevo like":
-        return "heart";
-      default:
-        return "notifications";
+    try {
+      const { data, error } = await supabase
+        .from("notificaciones")
+        .select("*")
+        .eq("id_receptor", usuario.id)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      setNotificaciones(data || []);
+    } catch (error) {
+      console.error("Error al cargar notificaciones:", error);
+    } finally {
+      setCargando(false);
+      setRefrescando(false);
     }
   };
 
+  const manejarRefrescar = () => {
+    setRefrescando(true);
+    obtenerNotificaciones();
+  };
+
+  const renderizarNotificacion = ({ item }) => (
+    <Pressable
+      style={estilos.itemNotificacion}
+      onPress={() => manejarClickNotificacion(item)}
+    >
+      <View style={estilos.contenidoNotificacion}>
+        <View style={estilos.iconoContainer}>
+          <Ionicons
+            name={obtenerIconoPorTipo(item.tipo)}
+            size={alto(3.2)}
+            color={tema.colors.primary}
+          />
+        </View>
+
+        <View style={estilos.textoContainer}>
+          <Text style={estilos.tituloNotificacion}>{item.titulo}</Text>
+          <Text style={estilos.mensajeNotificacion}>{item.cuerpo}</Text>
+          <Text style={estilos.fechaNotificacion}>
+            {formatearFecha(item.created_at)}
+          </Text>
+        </View>
+      </View>
+    </Pressable>
+  );
+
+  const obtenerIconoPorTipo = (tipo) => {
+    const iconos = {
+      comentario: "chatbubble-outline",
+      like: "heart-outline",
+      seguimiento: "person-add-outline",
+      sistema: "notifications-outline",
+    };
+    return iconos[tipo] || "notifications-outline";
+  };
+
   const formatearFecha = (fecha) => {
-    return new Date(fecha).toLocaleDateString("es-ES", {
+    const ahora = new Date();
+    const fechaNotif = new Date(fecha);
+    const diffMinutos = Math.floor((ahora - fechaNotif) / (1000 * 60));
+
+    if (diffMinutos < 1) return "Ahora mismo";
+    if (diffMinutos < 60) return `Hace ${diffMinutos} min`;
+    if (diffMinutos < 1440) return `Hace ${Math.floor(diffMinutos / 60)} h`;
+
+    return fechaNotif.toLocaleDateString("es-ES", {
       day: "numeric",
       month: "short",
-      hour: "2-digit",
-      minute: "2-digit",
     });
+  };
+
+  const manejarClickNotificacion = (notificacion) => {
+    // Lógica para manejar el click en la notificación
+    console.log("Notificación clickeada:", notificacion);
   };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Pantalla colorFondo="white">
         <View style={estilos.contenedorPrincipal}>
-          <Cabecera titulo="Notificaciones" atras={true} />
+          <Cabecera
+            titulo="Notificaciones"
+            atras={true}
+            accionExtra={
+              <Pressable onPress={manejarRefrescar}>
+                <Ionicons
+                  name="refresh"
+                  size={24}
+                  color={tema.colors.primary}
+                />
+              </Pressable>
+            }
+          />
 
           <View style={estilos.contenedorLista}>
             {cargando ? (
@@ -102,9 +138,23 @@ const Notificaciones = () => {
                 keyExtractor={(item) => item.id.toString()}
                 contentContainerStyle={estilos.listaContenedor}
                 showsVerticalScrollIndicator={false}
+                refreshing={refrescando}
+                onRefresh={manejarRefrescar}
+                ListEmptyComponent={
+                  <View style={estilos.centrado}>
+                    <Text style={estilos.sinNotificaciones}>
+                      No tienes notificaciones
+                    </Text>
+                  </View>
+                }
               />
             ) : (
               <View style={estilos.centrado}>
+                <Ionicons
+                  name="notifications-off-outline"
+                  size={alto(8)}
+                  color={tema.colors.grisClaro}
+                />
                 <Text style={estilos.sinNotificaciones}>
                   No tienes notificaciones
                 </Text>
@@ -120,50 +170,55 @@ const Notificaciones = () => {
 const estilos = StyleSheet.create({
   contenedorPrincipal: {
     flex: 1,
-    padding: ancho(4),
+    paddingHorizontal: ancho(4),
   },
   contenedorLista: {
     flex: 1,
-    marginTop: alto(4),
-    backgroundColor: "rgba(238, 238, 238, 0.5)",
-    borderRadius: 20,
-    paddingHorizontal: ancho(2),
-    paddingTop: alto(1),
+    marginTop: alto(2),
+    backgroundColor: tema.colors.fondo,
+    borderRadius: 16,
+    overflow: "hidden",
   },
   centrado: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    padding: ancho(4),
   },
   listaContenedor: {
-    paddingBottom: alto(10),
+    paddingVertical: alto(1),
   },
   itemNotificacion: {
-    flex: 1,
-    flexDirection: "row",
     backgroundColor: "white",
-    borderRadius: 15,
+    borderRadius: 12,
+    marginHorizontal: ancho(2),
+    marginVertical: alto(1),
     padding: ancho(3),
-    marginBottom: alto(1.5),
+    elevation: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+  },
+  contenidoNotificacion: {
+    flexDirection: "row",
     alignItems: "center",
   },
-  iconoNotificacion: {
+  iconoContainer: {
     backgroundColor: tema.colors.fondoIcono,
-    borderRadius: 50,
-    width: ancho(10),
-    height: ancho(10),
+    width: ancho(12),
+    height: ancho(12),
+    borderRadius: ancho(6),
     justifyContent: "center",
     alignItems: "center",
     marginRight: ancho(3),
   },
-  contenidoNotificacion: {
+  textoContainer: {
     flex: 1,
-    flexDirection: "row",
-    gap: 10,
   },
   tituloNotificacion: {
     fontSize: alto(2),
-    fontFamily: fuentes.PoppinsBold,
+    fontFamily: fuentes.PoppinsSemiBold,
     color: tema.colors.texto,
     marginBottom: alto(0.5),
   },
@@ -172,18 +227,19 @@ const estilos = StyleSheet.create({
     fontFamily: fuentes.Poppins,
     color: tema.colors.gris,
     marginBottom: alto(0.5),
-    lineHeight: alto(2.2),
+    lineHeight: alto(2.4),
   },
   fechaNotificacion: {
     fontSize: alto(1.6),
     fontFamily: fuentes.Poppins,
     color: tema.colors.grisClaro,
-    textAlign: "right",
   },
   sinNotificaciones: {
-    fontSize: alto(2.2),
+    fontSize: alto(2),
     color: tema.colors.gris,
     fontFamily: fuentes.Poppins,
+    marginTop: alto(2),
+    textAlign: "center",
   },
 });
 

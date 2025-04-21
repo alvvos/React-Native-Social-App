@@ -11,7 +11,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Boton from "../components/Boton";
 import { supabase } from "../lib/supabase";
 
-const Register = () => {
+const Registrar = () => {
   const router = useRouter();
   const emailRef = useRef("");
   const nameRef = useRef("");
@@ -43,18 +43,34 @@ const Register = () => {
         },
       },
     });
-
     setLoading(false);
     console.log("session", session);
-    console.log("error", session);
-
     if (error) {
-      Alert.alert("Aviso", "Error en el registro");
+      switch (error.message) {
+        case "Anonymous sign-ins are disabled":
+          Alert.alert("Error", "Rellena todos los campos");
+          break;
+        case "Signup requires a valid password":
+          Alert.alert("Error", "Completa el campo de contraseña");
+          break;
+        case "Unable to validate email address: invalid format":
+          Alert.alert("Error", "El formato del email es incorrecto");
+          break;
+        case "Password should be at least 6 characters.":
+          Alert.alert(
+            "Error",
+            "La contraseña debe tener al menos 6 caracteres"
+          );
+          break;
+        default:
+          Alert.alert("Error", "Ha ocurrido un error inesperado");
+          break;
+      }
     }
   };
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1, marginTop: 30 }}>
       <Pantalla bg="white">
         <StatusBar style="dark" />
         <View style={styles.container}>
@@ -93,7 +109,7 @@ const Register = () => {
           <Boton
             titulo={"Registrar"}
             loading={loading}
-            onPress={onSubmit}
+            alPresionar={onSubmit}
           ></Boton>
           <View style={styles.footer}>
             <Text style={styles.footerText}>Ya tengo cuenta </Text>
@@ -121,7 +137,7 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Registrar;
 
 const styles = StyleSheet.create({
   container: {

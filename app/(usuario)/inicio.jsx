@@ -18,7 +18,7 @@ const Inicio = () => {
 
   useEffect(() => {
     getPublicaciones();
-  }, []);
+  }, [publicaciones]);
 
   const getPublicaciones = async () => {
     let res = await buscarPublicacion();

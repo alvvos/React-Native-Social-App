@@ -117,7 +117,7 @@ const Publicacion = ({ item, usuarioActual, router }) => {
           <Image
             source={obtenerImagen(item?.usuario?.imagen)}
             transition={100}
-            borderRadius={tema.radius.sm}
+            borderRadius={100}
             style={{
               width: ancho(10),
               height: ancho(10),
@@ -141,11 +141,6 @@ const Publicacion = ({ item, usuarioActual, router }) => {
               {fechaParseada}
             </Text>
           </View>
-        </View>
-        <View style={{ margin: 4 }}>
-          <TouchableOpacity onPress={verDetalles}>
-            <Ionicons name="ellipsis-horizontal" size={20} />
-          </TouchableOpacity>
         </View>
       </View>
       <View style={styles.contenido}>
@@ -194,11 +189,6 @@ const Publicacion = ({ item, usuarioActual, router }) => {
               {comentarios?.length}
             </Text>
           </TouchableOpacity>
-          <Ionicons
-            name="cloud-upload-outline"
-            size={23}
-            color={tema.colors.iconosDark}
-          />
         </View>
         <View style={styles.cuerpo}>
           <Text style={styles.cuerpo}>

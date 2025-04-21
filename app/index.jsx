@@ -25,7 +25,7 @@ const Index = () => {
       <View style={styles.container}>
         <View style={{ gap: 20 }}>
           <Text style={styles.titulo}>Bienvenido/a</Text>
-          <Text style={styles.punchLine}>A mi proyecto final de grado.</Text>
+          <Text style={styles.punchLine}>A mi proyecto final de grado</Text>
         </View>
         <Image
           source={require("../assets/images/eep.png")}
@@ -33,10 +33,10 @@ const Index = () => {
         />
         <View style={styles.footer}>
           <Boton
-            titulo="Empecemos"
+            titulo="Registrarse"
             BotonStyle={{ marginHorizontal: ancho(3) }}
-            onPress={() => {
-              router.push("register");
+            alPresionar={() => {
+              router.push("registrar");
             }}
           />
           <View style={styles.bottomTextContainer}>

@@ -19,6 +19,7 @@ import { Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { obtenerImagen, subirImagen } from "../../services/imagenes";
 import { fuentes } from "../../constants/fuentes";
+import { Ionicons } from "@expo/vector-icons";
 
 const EditarPerfil = () => {
   const { usuario, setAuth, setUsuarioData } = useAuth();
@@ -51,15 +52,36 @@ const EditarPerfil = () => {
   const cambiarDatos = async () => {
     let data = { ..._usuario };
     let { nombre, telefono, imagen, biografia, direccion } = data;
+
     if (!nombre || !telefono || !imagen || !biografia || !direccion) {
-      Alert.alert("Perfil", "Por favor, rellena todos los campos");
+      Alert.alert("Error", "Por favor, rellena todos los campos");
       return;
     }
+
+    if (nombre.match(/[0-9]/)) {
+      Alert.alert("Error", "El nombre no debe contener números");
+      return;
+    }
+
+    if (direccion.match(/[^a-zA-Z0-9\s,.'-]/)) {
+      Alert.alert("Error", "La dirección contiene caracteres no válidos");
+      return;
+    }
+
+    const telefonoLimpio = telefono.replace(/\D/g, "");
+    if (!telefonoLimpio.match(/^[0-9]+$/)) {
+      Alert.alert("Error", "El teléfono debe contener solo números");
+      return;
+    }
+
+    data.telefono = telefonoLimpio;
+
     if (typeof imagen === "object") {
       let imagenRes = await subirImagen("perfil", imagen.uri, true);
       if (imagenRes.success) data.imagen = imagenRes.data;
       else data.imagen = null;
     }
+
     const res = await updateUsuarioData(usuario.id, data);
     console.log(usuario?.id);
     console.log("Resultado de la actualización", res);
@@ -99,13 +121,10 @@ const EditarPerfil = () => {
                   width: ancho(30),
                   height: ancho(30),
                   marginTop: 30,
-                  marginBottom: 30,
                 }}
               />
               <Pressable style={styles.boton} onPress={cambiarFoto}>
-                <Text style={{ fontFamily: fuentes.Poppins }}>
-                  Cambiar foto
-                </Text>
+                <Ionicons name="camera" size={20} color={tema.colors.text} />
               </Pressable>
             </View>
             <View style={styles.contenedor}>
@@ -115,7 +134,6 @@ const EditarPerfil = () => {
                   color: tema.colors.text,
                   alignSelf: "center",
                   fontFamily: fuentes.Poppins,
-                  marginTop: 10,
                 }}
               >
                 Completa tus datos
@@ -132,6 +150,7 @@ const EditarPerfil = () => {
                 <Campo
                   //icon={}
                   placeholder="Teléfono"
+                  keyboardType="phone-pad"
                   value={_usuario.telefono}
                   onChangeText={(value) => {
                     setUsuario({ ..._usuario, telefono: value });
@@ -173,7 +192,6 @@ export default EditarPerfil;
 const styles = StyleSheet.create({
   contenedor: {
     flex: 1,
-    paddingBottom: ancho(15),
   },
   contenedorCabecera: {
     marginHorizontal: ancho(4),
@@ -185,14 +203,17 @@ const styles = StyleSheet.create({
     height: alto(20),
   },
   boton: {
+    position: "absolute",
+    top: 100,
+    right: 120,
     padding: 10,
     backgroundColor: tema.colors.darklight,
-    borderRadius: tema.radius.sm,
+    borderRadius: 100,
     alignSelf: "center",
     fontFamily: fuentes.Poppins,
   },
   contenedorAvatar: {
-    height: alto(30),
+    height: alto(25),
     width: ancho(100),
     alignSelf: "center",
   },

@@ -80,6 +80,23 @@ export const buscarPublicacionesUsuario = async (usuarioId, limite = 10) => {
   }
 };
 
+export const borrarPublicacionPorId = async (idPublicacion) => {
+  try {
+    const { error } = await supabase
+      .from("publicaciones")
+      .delete()
+      .eq("id", idPublicacion);
+    if (error) {
+      console.log("Error al borrar publicacion: ", error);
+      return { success: false, error: error };
+    }
+    return { success: true, data: null };
+  } catch (error) {
+    console.log("Error al borrar publicacion: ", error);
+    return { success: false, error: error };
+  }
+};
+
 export const buscarLikesPorIdPublicacion = async (idPublicacion) => {
   try {
     const { data, error } = await supabase

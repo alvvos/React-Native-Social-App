@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Modal } from "react-native";
 import { tema } from "../constants/tema";
 import { supabase } from "../lib/supabase";
 import { Alert } from "react-native";
@@ -12,11 +12,19 @@ const Desplegable = () => {
   const [menuVisible, setMenuVisible] = useState(false);
   const router = useRouter();
   const opciones = [
-    { etiqueta: "Cerrar sesión", valor: "cerrarSesion" },
-    { etiqueta: "Editar perfil", valor: "editarPerfil" },
+    {
+      etiqueta: "Cerrar sesión",
+      valor: "cerrarSesion",
+      icono: "log-out-outline",
+    },
+    {
+      etiqueta: "Editar perfil",
+      valor: "editarPerfil",
+      icono: "person-outline",
+    },
   ];
+
   const manejarOpcionSeleccionada = (valor) => {
-    console.log("Opción seleccionada:", valor);
     if (valor === "cerrarSesion") {
       cerrarSesion();
     }
@@ -27,7 +35,7 @@ const Desplegable = () => {
   };
 
   async function cerrarSesion() {
-    Alert.alert("Confirmar", "Estas seguro de que quieres cerrar la sesión", [
+    Alert.alert("Confirmar", "¿Estás seguro de que quieres cerrar la sesión?", [
       {
         text: "Cancelar",
         style: "cancel",
@@ -37,10 +45,7 @@ const Desplegable = () => {
         onPress: async () => {
           const { error } = await supabase.auth.signOut();
           if (error) {
-            Alert.alert(
-              "Cerrar Sesión",
-              "Ha habido un problema cerrando tu sesión!"
-            );
+            Alert.alert("Error", "Ha habido un problema cerrando tu sesión");
           }
         },
         style: "destructive",
@@ -51,34 +56,50 @@ const Desplegable = () => {
   return (
     <View style={styles.contenedor}>
       <TouchableOpacity
-        onPress={() => setMenuVisible(!menuVisible)}
-        style={styles.boton}
+        onPress={() => setMenuVisible(true)}
+        style={styles.botonMenu}
       >
-        <Text
-          style={
-            ([styles.textoBoton],
-            { fontFamily: fuentes.Poppins, color: "white" })
-          }
-        >
-          <Ionicons name="menu" size={20} />
-        </Text>
+        <Ionicons name="menu" size={24} color="white" />
       </TouchableOpacity>
 
-      {menuVisible && (
-        <View style={styles.menu}>
-          {opciones.map((opcion) => (
+      <Modal
+        visible={menuVisible}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setMenuVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <TouchableOpacity
+            style={styles.overlay}
+            onPress={() => setMenuVisible(false)}
+            activeOpacity={1}
+          />
+          <View style={styles.barraLateral}>
+            <View style={styles.contenedorOpciones}>
+              {opciones.map((opcion) => (
+                <TouchableOpacity
+                  key={opcion.valor}
+                  onPress={() => manejarOpcionSeleccionada(opcion.valor)}
+                  style={styles.opcion}
+                >
+                  <Ionicons
+                    name={opcion.icono}
+                    size={24}
+                    color={tema.colors.primary}
+                  />
+                  <Text style={styles.textoOpcion}>{opcion.etiqueta}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
             <TouchableOpacity
-              key={opcion.valor}
-              onPress={() => manejarOpcionSeleccionada(opcion.valor)}
-              style={styles.opcion}
+              style={styles.botonCerrar}
+              onPress={() => setMenuVisible(false)}
             >
-              <Text style={{ fontFamily: fuentes.Poppins }}>
-                {opcion.etiqueta}
-              </Text>
+              <Ionicons name="close" size={24} color={tema.colors.primary} />
             </TouchableOpacity>
-          ))}
+          </View>
         </View>
-      )}
+      </Modal>
     </View>
   );
 };
@@ -86,36 +107,48 @@ const Desplegable = () => {
 const styles = StyleSheet.create({
   contenedor: {
     position: "relative",
+    zIndex: 1,
   },
-  boton: {
+  botonMenu: {
     padding: 10,
     backgroundColor: tema.colors.primary,
     borderRadius: tema.radius.sm,
   },
-  textoBoton: {
-    color: "white",
-    fontWeight: tema.fonts.bold,
-    fontFamily: fuentes.PoppinsBold,
+  modalContainer: {
+    flex: 1,
+    flexDirection: "row",
   },
-  menu: {
-    position: "absolute",
-    top: 40,
-    right: 0,
+  barraLateral: {
+    width: ancho(70),
+    height: "100%",
     backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    zIndex: 1,
-    width: ancho(40),
-    alignItems: "center",
-    marginTop: 10,
-    padding: 5,
-    fontFamily: fuentes.Poppins,
+    padding: 20,
+  },
+  contenedorOpciones: {
+    flex: 1,
+    marginTop: 50,
   },
   opcion: {
-    marginTop: 10,
-    margin: 2,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  textoOpcion: {
     fontFamily: fuentes.Poppins,
+    marginLeft: 15,
+    fontSize: 16,
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  botonCerrar: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    padding: 5,
   },
 });
 

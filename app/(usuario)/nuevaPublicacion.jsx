@@ -18,14 +18,15 @@ import Badge from "../../components/Badge";
 import Boton from "../../components/Boton";
 import * as ImagePicker from "expo-image-picker";
 import { Video } from "expo-av";
-import { use } from "react";
 import { fuentes } from "../../constants/fuentes";
+import { Ionicons } from "@expo/vector-icons";
 
-const nuevaPublicacion = () => {
-  const { usuario, setAuth } = useAuth();
+const NuevaPublicacion = () => {
+  const { usuario } = useAuth();
   const router = useRouter();
   const textoRef = useRef("");
-  const [archivo, setArchivo] = useState(archivo);
+  const [archivo, setArchivo] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const Publicar = async () => {
     if (!textoRef.current || !archivo) {
@@ -33,19 +34,27 @@ const nuevaPublicacion = () => {
       return;
     }
 
-    let data = {
-      cuerpo: textoRef.current,
-      archivo: archivo,
-      id_usuario: usuario.id,
-    };
+    setIsSubmitting(true);
 
-    let res = await crearOActualizarPublicacion(data);
-    if (res.success) {
-      setArchivo(null);
-      textoRef.current = "";
-      router.push("inicio");
-    } else {
-      Alert.alert("Aviso", "Ha habido un problema al publicar la publicación");
+    try {
+      const data = {
+        cuerpo: textoRef.current,
+        archivo: archivo,
+        id_usuario: usuario.id,
+      };
+
+      const res = await crearOActualizarPublicacion(data);
+      if (res.success) {
+        setArchivo(null);
+        textoRef.current = "";
+        router.push("inicio");
+      } else {
+        Alert.alert("Error", "Ha habido un problema al publicar");
+      }
+    } catch (error) {
+      Alert.alert("Error", "Ocurrió un error al procesar tu publicación");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -58,15 +67,14 @@ const nuevaPublicacion = () => {
   };
 
   const subirArchivo = async () => {
-    let mediaConfig = {
+    const mediaConfig = {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [16, 16],
-      quality: 1,
+      aspect: [4, 3],
+      quality: 0.8,
     };
 
-    let res = await ImagePicker.launchImageLibraryAsync(mediaConfig);
-    console.log("archivo: ", res.assets[0]);
+    const res = await ImagePicker.launchImageLibraryAsync(mediaConfig);
     if (!res.canceled) {
       setArchivo(res.assets[0]);
     }
@@ -81,149 +89,88 @@ const nuevaPublicacion = () => {
   const getTipoArchivo = (archivo) => {
     if (!archivo) return null;
     if (esLocal(archivo)) {
-      return archivo.type;
+      return archivo.type?.startsWith("video") ? "video" : "imagen";
     }
-
-    if (archivo.includes("imagen")) {
-      return "imagen";
-    }
-
-    return "video";
+    return archivo.includes("imagen") ? "imagen" : "video";
   };
 
   return (
-    <GestureHandlerRootView>
-      <Pantalla>
-        <View
-          style={{
-            flex: 1,
-            padding: ancho(7),
-          }}
-        >
-          <ScrollView>
-            <Cabecera titulo="Publicación" atras="true"></Cabecera>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-evenly",
-              }}
-            >
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Pantalla colorFondo="#f8f8f8">
+        <View style={styles.contenedorPrincipal}>
+          <Cabecera titulo="Crear publicación" atras={true} />
+
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+          >
+            {/* Sección del usuario */}
+            <View style={styles.seccionUsuario}>
               <Image
                 source={obtenerImagen(usuario?.imagen)}
-                size={ancho(2)}
-                borderRadius={100}
-                alignSelf="right"
-                transition={100}
-                style={{
-                  width: ancho(40),
-                  height: ancho(40),
-                  marginTop: 25,
-                }}
+                style={styles.avatarUsuario}
               />
+              <Text style={styles.nombreUsuario}>{usuario?.nombre}</Text>
             </View>
-            <View
-              style={{
-                marginTop: 30,
-                borderWidth: 1,
-                borderColor: "#ccc",
-                borderRadius: 10,
-                padding: 10,
-                backgroundColor: "#fff",
-                textAlignVertical: "top",
-              }}
-            >
+
+            {/* Área de texto */}
+            <View style={styles.contenedorTexto}>
               <TextInput
                 multiline
-                onChangeText={(value) => {
-                  textoRef.current = value;
-                }}
-                placeholder="Escribe algo..."
-                contentStyle={{
-                  color: "#000",
-                  fontSize: 15,
-                  textAlignVertical: "top",
-                  textAlign: "left",
-                  padding: 10,
-                  backgroundColor: "#fff",
-                  height: 200,
-                  fontFamily: fuentes.Poppins,
-                }}
+                numberOfLines={5}
+                onChangeText={(value) => (textoRef.current = value)}
+                placeholder="¿Qué estás pensando?"
+                placeholderTextColor={tema.colors.gris}
+                style={styles.inputTexto}
+                underlineColor="transparent"
+                activeUnderlineColor="transparent"
+                theme={{ colors: { primary: tema.colors.primary } }}
               />
             </View>
+
+            {/* Vista previa del archivo */}
             {archivo && (
-              <View
-                styles={{
-                  height: alto(20),
-                  width: "100%",
-                  borderRadius: tema.radius.xl,
-                  borderCurve: "continuous",
-                  overflow: "hidden",
-                }}
-              >
-                {getTipoArchivo(archivo) == "video" ? (
+              <View style={styles.contenedorArchivo}>
+                {getTipoArchivo(archivo) === "video" ? (
                   <Video
-                    style={{
-                      width: ancho(80),
-                      height: ancho(50),
-                      marginTop: 30,
-                    }}
+                    style={styles.videoPreview}
                     source={{ uri: getUri(archivo) }}
                     useNativeControls
-                    resizeMode="contain"
+                    resizeMode="cover"
                     isLooping
                   />
                 ) : (
                   <Image
                     source={{ uri: getUri(archivo) }}
-                    size={ancho(2)}
-                    borderRadius={tema.radius.md}
-                    alignSelf="center"
-                    transition={100}
-                    style={{
-                      width: ancho(85),
-                      height: ancho(50),
-                      marginTop: 30,
-                    }}
+                    style={styles.imagenPreview}
                   />
                 )}
                 <Badge
-                  estilosExtra={{
-                    marginLeft: 0,
-                    position: "absolute",
-                    top: 40,
-                    right: 10,
-                  }}
                   icono="trash"
-                  color="rgb(180, 42, 42)"
+                  color={"rgba(240, 27, 27, 0.68)"}
                   onPress={() => setArchivo(null)}
+                  estilosExtra={styles.botonEliminar}
                 />
               </View>
             )}
-            <View
-              style={{
-                marginTop: 30,
-                borderWidth: 1,
-                borderColor: "#ccc",
-                borderRadius: 10,
-                padding: 10,
-                backgroundColor: "#fff",
-                textAlignVertical: "top",
-              }}
-            >
-              <View style={{ flexDirection: "row", gap: 10 }}>
-                <Badge
-                  icono="folder"
-                  onPress={subirArchivo}
-                  estilosExtra={{ marginTop: 0 }}
-                />
-              </View>
-            </View>
+
+            {/* Botón para subir archivo */}
+            <Pressable style={styles.addMediaButton} onPress={subirArchivo}>
+              <Ionicons
+                name="image-outline"
+                size={28}
+                color={tema.colors.primary}
+              />
+            </Pressable>
+
+            {/* Botón de publicar */}
             <Boton
-              botonStyles={{ marginTop: 30 }}
-              titulo="Publicar"
+              titulo={isSubmitting ? "Publicando..." : "Publicar"}
               alPresionar={Publicar}
-            ></Boton>
+              deshabilitado={isSubmitting || !archivo}
+              estilosContenedor={styles.botonPublicar}
+              estilosTexto={styles.textoBotonPublicar}
+            />
           </ScrollView>
         </View>
       </Pantalla>
@@ -231,51 +178,98 @@ const nuevaPublicacion = () => {
   );
 };
 
-export default nuevaPublicacion;
-
 const styles = StyleSheet.create({
-  contenedor: {
+  contenedorPrincipal: {
     flex: 1,
+    paddingHorizontal: 16,
   },
-  contenedorCabecera: {
-    marginHorizontal: ancho(4),
-    marginBottom: 20,
+  scrollContent: {
+    paddingBottom: 24,
   },
-  formaCabecera: {
-    width: ancho(100),
-    height: alto(20),
-  },
-  contenedorAvatar: {
-    flex: 1,
-    height: alto(10),
-    width: ancho(100),
-    alignSelf: "center",
-    borderWidth: 3,
-  },
-  iconoEditar: {
-    position: "absolute",
-    bottom: 0,
-    right: -12,
-    padding: 7,
-    borderRadius: 50,
-    backgroundColor: "white",
-  },
-  info: {
+  seccionUsuario: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    justifyContent: "center",
+    marginTop: 24,
+    marginBottom: 32,
   },
-  usuario: {
-    fontSize: alto(3),
-    fontWeight: "500",
-    color: tema.colors.primaryDark,
+  addMediaButton: {
+    alignSelf: "flex-start",
+    padding: 12,
+    borderRadius: 30,
+    backgroundColor: "#f5f5f5",
+    marginBottom: 24,
   },
-  cerrarSesion: {
+  avatarUsuario: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    marginRight: 16,
+  },
+  nombreUsuario: {
+    fontSize: 16,
+    fontFamily: fuentes.PoppinsSemiBold,
+    color: tema.colors.texto,
+  },
+  contenedorTexto: {
+    borderRadius: 12,
+    backgroundColor: "rgba(37, 37, 37, 0.05)",
+    marginBottom: 24,
+  },
+  inputTexto: {
+    minHeight: 160,
+    padding: 16,
+    textAlignVertical: "top",
+    backgroundColor: "transparent",
+    fontSize: 15,
+    fontFamily: fuentes.Poppins,
+    color: tema.colors.texto,
+  },
+  contenedorArchivo: {
+    marginBottom: 24,
+    borderRadius: 12,
+    overflow: "hidden",
+    position: "relative",
+  },
+  imagenPreview: {
+    width: "100%",
+    height: 300,
+    backgroundColor: tema.colors.fondo,
+  },
+  videoPreview: {
+    width: "100%",
+    height: 300,
+    backgroundColor: "#000",
+  },
+  botonEliminar: {
     position: "absolute",
-    right: 0,
-    padding: 10,
-    borderRadius: tema.radius.sm,
-    backgroundColor: "#fee2e2",
+    top: 16,
+    right: 16,
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+  },
+  contenedorSubirArchivo: {
+    marginBottom: 32,
+  },
+  botonSubir: {
+    borderColor: tema.colors.primary,
+    borderWidth: 1.5,
+    borderRadius: 8,
+    paddingVertical: 12,
+  },
+  textoBotonSubir: {
+    color: tema.colors.primary,
+    fontSize: 15,
+    fontFamily: fuentes.PoppinsSemiBold,
+  },
+  botonPublicar: {
+    backgroundColor: tema.colors.primary,
+    borderRadius: 8,
+    paddingVertical: 14,
+  },
+  textoBotonPublicar: {
+    color: "#fff",
+    fontSize: 16,
+    fontFamily: fuentes.PoppinsSemiBold,
   },
 });
+
+export default NuevaPublicacion;

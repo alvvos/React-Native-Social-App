@@ -16,7 +16,7 @@ const Login = () => {
   const emailRef = useRef("");
   const passwordRef = useRef("");
 
-  const onSubmit = async () => {
+  const darseAlta = async () => {
     if (!emailRef || !passwordRef) {
       Alert.alert("Aviso", "Completa todos los campos");
       return;
@@ -29,13 +29,25 @@ const Login = () => {
       password,
     });
 
-    if (error) {
-      Alert.alert("Aviso", error.message);
+    if (error.message) {
+      switch (error.message) {
+        case "Invalid login credentials":
+          Alert.alert("Error", "Correo o contraseña incorrectos");
+          break;
+        case "missing email or phone":
+          Alert.alert("Error", "Email o contraseña sin completar");
+          break;
+        default:
+          Alert.alert("Error", "Ha ocurrido un error inesperado");
+          break;
+      }
+    } else {
+      router.push("/inicio");
     }
   };
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1, marginTop: 30 }}>
       <Pantalla bg="white">
         <StatusBar style="dark" />
         <View style={styles.container}>
@@ -64,12 +76,12 @@ const Login = () => {
             />
           </View>
           <Text style={styles.forgotPassword}>Has olvidado tu contraseña?</Text>
-          <Boton titulo={"Entrar"} alPresionar={onSubmit} />
+          <Boton titulo={"Entrar"} alPresionar={darseAlta} />
           <View style={styles.footer}>
             <Text style={styles.footerText}>¿No tienes una cuenta?</Text>
             <Pressable
               onPress={() => {
-                router.push("register");
+                router.push("registrar");
               }}
             >
               <Text
