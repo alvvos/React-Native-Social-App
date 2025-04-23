@@ -1,0 +1,22 @@
+{
+  "name": "Supabase Social App",
+  "favicon": "./assets/images/eep.png",
+  "colors": {
+    "primary": "#f52e79",
+    "light": "#f8f8f8",
+    "dark": "#3E3E3E"
+  },
+  "navigation": [
+    {
+      "group": "Componentes",
+      "pages": ["docs/components"]
+    },
+    {
+      "group": "Servicios",
+      "pages": ["docs/services"]
+    }
+  ],
+  "framework": "react-native",
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}

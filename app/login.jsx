@@ -41,8 +41,6 @@ const Login = () => {
           Alert.alert("Error", "Ha ocurrido un error inesperado");
           break;
       }
-    } else {
-      router.push("/inicio");
     }
   };
 

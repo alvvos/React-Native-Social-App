@@ -19,19 +19,18 @@ const MainLayout = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const { data: subscription } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        console.log("usuario_sesion: ", session?.user || "");
-        if (session?.user) {
-          setAuth(session.user);
-          await actualizarUsuario(session.user);
-          router.replace("/inicio");
-        } else {
-          setAuth(null);
-          router.replace("/");
-        }
+    supabase.auth.onAuthStateChange(async (_event, session) => {
+      console.log("usuario_sesion: ", session?.user || "");
+      if (session) {
+        setAuth(session.user);
+        console.log("hollaaaa");
+        await actualizarUsuario(session.user);
+        router.replace("/inicio");
+      } else {
+        setAuth(null);
+        router.replace("/");
       }
-    );
+    });
   }, []);
 
   const actualizarUsuario = async (usuario) => {

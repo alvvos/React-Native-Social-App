@@ -39,7 +39,7 @@ const Inicio = () => {
         <View style={styles.iconos}>
           <Pressable onPress={() => router.push("notificaciones")}>
             <Ionicons
-              name="notifications"
+              name="notifications-outline"
               size={alto(4)}
               color={tema.colors.iconos}
             />
@@ -49,14 +49,22 @@ const Inicio = () => {
               router.push("nuevaPublicacion");
             }}
           >
-            <Ionicons name="camera" size={alto(4)} color={tema.colors.iconos} />
+            <Ionicons
+              name="camera-outline"
+              size={alto(4)}
+              color={tema.colors.iconos}
+            />
           </Pressable>
           <Pressable
             onPress={() => {
               router.push("perfil");
             }}
           >
-            <Ionicons name="person" size={alto(4)} color={tema.colors.iconos} />
+            <Ionicons
+              name="person-outline"
+              size={alto(4)}
+              color={tema.colors.iconos}
+            />
           </Pressable>
         </View>
         <FlatList

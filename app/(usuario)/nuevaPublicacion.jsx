@@ -13,7 +13,7 @@ import { useAuth } from "../../context/AuthContext";
 import { obtenerImagen, supabase_url } from "../../services/imagenes";
 import { Image } from "react-native";
 import { useRouter } from "expo-router";
-import { TextInput } from "react-native-paper";
+import { TextInput } from "react-native";
 import Badge from "../../components/Badge";
 import Boton from "../../components/Boton";
 import * as ImagePicker from "expo-image-picker";
@@ -70,7 +70,7 @@ const NuevaPublicacion = () => {
     const mediaConfig = {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [4, 4],
       quality: 0.8,
     };
 
@@ -104,7 +104,6 @@ const NuevaPublicacion = () => {
             contentContainerStyle={styles.scrollContent}
             keyboardShouldPersistTaps="handled"
           >
-            {/* Sección del usuario */}
             <View style={styles.seccionUsuario}>
               <Image
                 source={obtenerImagen(usuario?.imagen)}
@@ -112,23 +111,19 @@ const NuevaPublicacion = () => {
               />
               <Text style={styles.nombreUsuario}>{usuario?.nombre}</Text>
             </View>
-
-            {/* Área de texto */}
             <View style={styles.contenedorTexto}>
               <TextInput
                 multiline
                 numberOfLines={5}
                 onChangeText={(value) => (textoRef.current = value)}
                 placeholder="¿Qué estás pensando?"
-                placeholderTextColor={tema.colors.gris}
+                placeholderTextColor={tema.colors.text}
                 style={styles.inputTexto}
                 underlineColor="transparent"
                 activeUnderlineColor="transparent"
                 theme={{ colors: { primary: tema.colors.primary } }}
               />
             </View>
-
-            {/* Vista previa del archivo */}
             {archivo && (
               <View style={styles.contenedorArchivo}>
                 {getTipoArchivo(archivo) === "video" ? (
@@ -153,8 +148,6 @@ const NuevaPublicacion = () => {
                 />
               </View>
             )}
-
-            {/* Botón para subir archivo */}
             <Pressable style={styles.addMediaButton} onPress={subirArchivo}>
               <Ionicons
                 name="image-outline"
@@ -162,8 +155,6 @@ const NuevaPublicacion = () => {
                 color={tema.colors.primary}
               />
             </Pressable>
-
-            {/* Botón de publicar */}
             <Boton
               titulo={isSubmitting ? "Publicando..." : "Publicar"}
               alPresionar={Publicar}
@@ -220,9 +211,9 @@ const styles = StyleSheet.create({
     padding: 16,
     textAlignVertical: "top",
     backgroundColor: "transparent",
-    fontSize: 15,
+    fontSize: 16,
+    color: tema.colors.text,
     fontFamily: fuentes.Poppins,
-    color: tema.colors.texto,
   },
   contenedorArchivo: {
     marginBottom: 24,

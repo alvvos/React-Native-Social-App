@@ -83,6 +83,9 @@ const Perfil = () => {
         contentFit="cover"
       />
       <View style={styles.publicacionOverlay}>
+        <View>
+          <Text>{item.cuerpo}</Text>
+        </View>
         <View style={styles.publicacionStats}>
           <Ionicons name="heart" size={16} color="white" />
           <Text style={styles.publicacionStatText}>
@@ -221,7 +224,22 @@ const Perfil = () => {
                         contentFit="contain"
                       />
                     </View>
-
+                    <View
+                      style={{
+                        marginLeft: 20,
+                        marginVertical: 5,
+                        flex: 1,
+                        flexDirection: "row",
+                      }}
+                    >
+                      <Text style={{ fontFamily: fuentes.PoppinsBold }}>
+                        {usuario?.nombre}
+                        {":  "}
+                      </Text>
+                      <Text style={{ fontFamily: fuentes.Poppins }}>
+                        {publicacionSeleccionada.cuerpo}
+                      </Text>
+                    </View>
                     <View style={styles.interaccionesContainer}>
                       <View style={styles.likesContainer}>
                         <View style={styles.likesComentarios}>
@@ -495,7 +513,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 20,
+    marginBottom: 5,
   },
   likesComentarios: {
     flexDirection: "row",
