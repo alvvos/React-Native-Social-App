@@ -47,7 +47,7 @@ const EditarPerfil = () => {
         direccion: usuario.direccion || "",
       });
     }
-  }, []);
+  }, [usuario]);
 
   const cambiarDatos = async () => {
     let data = { ..._usuario };
@@ -95,7 +95,7 @@ const EditarPerfil = () => {
     let res = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [4, 4],
       quality: 0.7,
     });
 

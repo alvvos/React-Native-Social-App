@@ -61,7 +61,7 @@ const Notificaciones = () => {
       <View style={estilos.contenidoNotificacion}>
         <View style={estilos.iconoContainer}>
           <Ionicons
-            name={obtenerIconoPorTipo(item.tipo)}
+            name={obtenerIconoPorTipo(item.titulo)}
             size={alto(3.2)}
             color={tema.colors.primary}
           />
@@ -78,15 +78,14 @@ const Notificaciones = () => {
     </Pressable>
   );
 
-  const obtenerIconoPorTipo = (tipo) => {
+  const obtenerIconoPorTipo = (titulo) => {
     const iconos = {
-      comentario: "chatbubble-outline",
-      like: "heart-outline",
-      seguimiento: "person-add-outline",
-      sistema: "notifications-outline",
+      "Nuevo comentario": "chatbubble-outline",
+      "Nuevo like": "heart-outline"
     };
-    return iconos[tipo] || "notifications-outline";
+    return iconos[titulo] || "notifications-outline";
   };
+  
 
   const formatearFecha = (fecha) => {
     const ahora = new Date();

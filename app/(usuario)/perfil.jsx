@@ -7,6 +7,7 @@ import {
   Modal,
   Dimensions,
   ScrollView,
+  TextInput,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Pantalla from "../../components/Pantalla";
@@ -21,11 +22,12 @@ import {
   buscarLikesPorIdPublicacion,
   buscarPublicacionesUsuario,
   obtenerComentariosPorPublicacion,
+  crearOActualizarPublicacion,
+  borrarPublicacionPorId,
 } from "../../services/publicaciones";
 import { fuentes } from "../../constants/fuentes";
 import { Ionicons } from "@expo/vector-icons";
 import { obtenerImagen } from "../../services/imagenes";
-import { borrarPublicacionPorId } from "../../services/publicaciones";
 
 const Perfil = () => {
   const { usuario } = useAuth();
@@ -35,6 +37,8 @@ const Perfil = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [likes, setLikes] = useState([]);
   const [comentarios, setComentarios] = useState([]);
+  const [editando, setEditando] = useState(false);
+  const [nuevoCuerpo, setNuevoCuerpo] = useState("");
 
   useEffect(() => {
     if (usuario?.id) {
@@ -51,6 +55,7 @@ const Perfil = () => {
 
   const abrirModalPublicacion = async (publicacion) => {
     setPublicacionSeleccionada(publicacion);
+    setEditando(false);
     const resLikes = await buscarLikesPorIdPublicacion(publicacion.id);
     if (resLikes.success) setLikes(resLikes.data);
     const resComentarios = await obtenerComentariosPorPublicacion(
@@ -68,7 +73,27 @@ const Perfil = () => {
       setLikes([]);
       setComentarios([]);
       console.log("Publicacion borrada con éxito");
-      router.back();
+      obtenerPublicacionesUsuario();
+    }
+  };
+
+  const manejarEdicion = async () => {
+    if (editando) {
+      const res = await crearOActualizarPublicacion({
+        id: publicacionSeleccionada.id,
+        cuerpo: nuevoCuerpo,
+        id_usuario: usuario.id,
+        archivo: publicacionSeleccionada.archivo
+      });
+      
+      if (res.success) {
+        setPublicacionSeleccionada({...publicacionSeleccionada, cuerpo: nuevoCuerpo});
+        setEditando(false);
+        obtenerPublicacionesUsuario();
+      }
+    } else {
+      setNuevoCuerpo(publicacionSeleccionada.cuerpo);
+      setEditando(true);
     }
   };
 
@@ -84,7 +109,7 @@ const Perfil = () => {
       />
       <View style={styles.publicacionOverlay}>
         <View>
-          <Text>{item.cuerpo}</Text>
+          <Text style={styles.textoOverlay}>{item.cuerpo}</Text>
         </View>
         <View style={styles.publicacionStats}>
           <Ionicons name="heart" size={16} color="white" />
@@ -224,21 +249,32 @@ const Perfil = () => {
                         contentFit="contain"
                       />
                     </View>
-                    <View
-                      style={{
-                        marginLeft: 20,
-                        marginVertical: 5,
-                        flex: 1,
-                        flexDirection: "row",
-                      }}
-                    >
-                      <Text style={{ fontFamily: fuentes.PoppinsBold }}>
-                        {usuario?.nombre}
-                        {":  "}
-                      </Text>
-                      <Text style={{ fontFamily: fuentes.Poppins }}>
-                        {publicacionSeleccionada.cuerpo}
-                      </Text>
+                    <View style={{marginLeft: 20, marginVertical: 5, flex: 1}}>
+                      {editando ? (
+                        <TextInput
+                          style={{
+                            fontFamily: fuentes.Poppins,
+                            borderWidth: 1,
+                            borderColor: tema.colors.grisClaro,
+                            borderRadius: 8,
+                            padding: 10,
+                            marginRight: 20
+                          }}
+                          value={nuevoCuerpo}
+                          onChangeText={setNuevoCuerpo}
+                          multiline
+                        />
+                      ) : (
+                        <View style={{flexDirection: "row"}}>
+                          <Text style={{fontFamily: fuentes.PoppinsBold}}>
+                            {usuario?.nombre}
+                            {":  "}
+                          </Text>
+                          <Text style={{fontFamily: fuentes.Poppins}}>
+                            {publicacionSeleccionada.cuerpo}
+                          </Text>
+                        </View>
+                      )}
                     </View>
                     <View style={styles.interaccionesContainer}>
                       <View style={styles.likesContainer}>
@@ -252,12 +288,27 @@ const Perfil = () => {
                             {likes.length || 0} me gusta
                           </Text>
                         </View>
-                        <Pressable
-                          onPress={() => borrarPublicacion()}
-                          style={styles.borrarButton}
-                        >
-                          <Ionicons name="trash" size={20} color="white" />
-                        </Pressable>
+                        <View style={styles.botonesAccion}>
+                          <Pressable
+                            onPress={manejarEdicion}
+                            style={[styles.botonAccion, editando ? styles.botonGuardar : styles.botonEditar]}
+                          >
+                            <Ionicons 
+                              name={editando ? "checkmark" : "ellipsis-horizontal"} 
+                              size={20} 
+                              color="white" 
+                            />
+                          </Pressable>
+                          
+                          {!editando && (
+                            <Pressable
+                              onPress={borrarPublicacion}
+                              style={[styles.botonAccion, styles.botonEliminar]}
+                            >
+                              <Ionicons name="trash" size={20} color="white" />
+                            </Pressable>
+                          )}
+                        </View>
                       </View>
 
                       <View style={styles.comentariosContainer}>
@@ -423,6 +474,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     opacity: 0,
   },
+  textoOverlay: {
+    color: "white",
+    fontFamily: fuentes.Poppins,
+    fontSize: 14,
+  },
   publicacionStats: {
     flexDirection: "row",
     alignItems: "center",
@@ -524,10 +580,22 @@ const styles = StyleSheet.create({
     fontFamily: fuentes.Poppins,
     fontSize: 16,
   },
-  borrarButton: {
-    backgroundColor: tema.colors.primary,
+  botonesAccion: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  botonAccion: {
     padding: 8,
     borderRadius: 20,
+  },
+  botonEditar: {
+    backgroundColor: "rgba(0, 169, 174, 0.4)",
+  },
+  botonEliminar: {
+    backgroundColor: '#ff3b30',
+  },
+  botonGuardar: {
+    backgroundColor: '#34C759',
   },
   comentariosContainer: {
     marginTop: 16,

@@ -23,7 +23,6 @@ const MainLayout = () => {
       console.log("usuario_sesion: ", session?.user || "");
       if (session) {
         setAuth(session.user);
-        console.log("hollaaaa");
         await actualizarUsuario(session.user);
         router.replace("/inicio");
       } else {

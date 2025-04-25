@@ -150,7 +150,7 @@ const Publicacion = ({ item, usuarioActual, router }) => {
           borderRadius={tema.radius.sm}
           style={{
             width: ancho(80),
-            height: ancho(50),
+            height: ancho(80),
           }}
         />
         <View style={{ flex: 1, flexDirection: "row", marginTop: 10, gap: 15 }}>
