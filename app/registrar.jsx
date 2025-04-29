@@ -10,6 +10,7 @@ import Campo from "../components/Campo";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Boton from "../components/Boton";
 import { supabase } from "../lib/supabase";
+import { fuentes } from "../constants/fuentes";
 
 const Registrar = () => {
   const router = useRouter();
@@ -64,6 +65,7 @@ const Registrar = () => {
           break;
         default:
           Alert.alert("Error", "Ha ocurrido un error inesperado");
+          console.log(error.message);
           break;
       }
     }
@@ -79,25 +81,31 @@ const Registrar = () => {
             <Text style={styles.welcomeText}>Regístrate</Text>
           </View>
           <View style={styles.form}>
-            <Text style={{ fontSize: alto(2.5), color: tema.colors.text }}>
+            <Text
+              style={{
+                fontSize: alto(2.5),
+                color: tema.colors.text,
+                fontFamily: fuentes.Poppins,
+              }}
+            >
               Por favor ingresa tus detalles a continuación
             </Text>
             <Campo
-              //icon={}
+              icon={"person-outline"}
               placeholder="Nombre"
               onChangeText={(value) => {
                 nameRef.current = value;
               }}
             />
             <Campo
-              //icon={}
+              icon={"mail-outline"}
               placeholder="Email"
               onChangeText={(value) => {
                 emailRef.current = value;
               }}
             />
             <Campo
-              //icon={}
+              icon={"lock-closed-outline"}
               placeholder="Contraseña"
               secureTextEntry
               onChangeText={(value) => {
@@ -170,5 +178,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: tema.colors.text,
     fontSize: alto(2),
+    fontFamily: fuentes.Poppins,
   },
 });

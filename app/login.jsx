@@ -10,6 +10,7 @@ import Campo from "../components/Campo";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Boton from "../components/Boton";
 import { supabase } from "../lib/supabase";
+import { fuentes } from "../constants/fuentes";
 
 const Login = () => {
   const router = useRouter();
@@ -51,21 +52,27 @@ const Login = () => {
         <View style={styles.container}>
           <Atras router={router} />
           <View>
-            <Text style={styles.welcomeText}>Bienvenido/a de vuelta</Text>
+            <Text style={styles.welcomeText}>Bienvenido/a!</Text>
           </View>
           <View style={styles.form}>
-            <Text style={{ fontSize: alto(2.5), color: tema.colors.text }}>
+            <Text
+              style={{
+                fontSize: alto(2),
+                color: tema.colors.text,
+                fontFamily: fuentes.Poppins,
+              }}
+            >
               Ingresa tus datos a continuación.
             </Text>
             <Campo
-              //icon={}
+              icon={"mail-outline"}
               placeholder="Email"
               onChangeText={(value) => {
                 emailRef.current = value;
               }}
             />
             <Campo
-              //icon={}
+              icon={"lock-closed-outline"}
               placeholder="Contraseña"
               secureTextEntry
               onChangeText={(value) => {
@@ -73,7 +80,11 @@ const Login = () => {
               }}
             />
           </View>
-          <Text style={styles.forgotPassword}>Has olvidado tu contraseña?</Text>
+          <Pressable onPress={() => router.push("recuperacion")}>
+            <Text style={styles.forgotPassword}>
+              Has olvidado tu contraseña?
+            </Text>
+          </Pressable>
           <Boton titulo={"Entrar"} alPresionar={darseAlta} />
           <View style={styles.footer}>
             <Text style={styles.footerText}>¿No tienes una cuenta?</Text>
@@ -123,6 +134,7 @@ const styles = StyleSheet.create({
     color: tema.colors.text,
     marginHorizontal: ancho(1),
     fontSize: alto(2),
+    fontFamily: fuentes.PoppinsSemiBold,
   },
   footer: {
     flexDirection: "row",
@@ -134,5 +146,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: tema.colors.text,
     fontSize: alto(2),
+    fontFamily: fuentes.Poppins,
   },
 });

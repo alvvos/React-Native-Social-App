@@ -4,11 +4,12 @@ import { TextInput } from "react-native-gesture-handler";
 import { tema } from "../constants/tema";
 import { alto, ancho } from "../helpers/dimensiones";
 import { fuentes } from "../constants/fuentes";
+import { Ionicons } from "@expo/vector-icons";
 
 const Campo = (props) => {
   return (
     <View style={[styles.contenedor]}>
-      {props.icon}
+      <Ionicons name={props.icon} size={alto(3)} color={tema.colors.text} />
       <TextInput
         style={{ flex: 1, fontSize: ancho(4), fontFamily: fuentes.Poppins }}
         placeholderTextColor={tema.colors.textLight}
