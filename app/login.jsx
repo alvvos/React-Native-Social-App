@@ -47,7 +47,7 @@ const Login = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1, marginTop: 30 }}>
-      <Pantalla bg="white">
+      <ScrollView style={{ padding: ancho(3), paddingVertical: ancho(4) }}>
         <StatusBar style="dark" />
         <View style={styles.container}>
           <Atras router={router} />
@@ -107,7 +107,7 @@ const Login = () => {
             </Pressable>
           </View>
         </View>
-      </Pantalla>
+      </ScrollView>
     </GestureHandlerRootView>
   );
 };

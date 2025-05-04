@@ -7,7 +7,7 @@ export const getUsuarioData = async (id_usuario) => {
       .select()
       .eq("id", id_usuario)
       .single();
-      
+
     if (error) {
       return { success: false, msg: error?.message };
     }
@@ -20,12 +20,28 @@ export const getUsuarioData = async (id_usuario) => {
   }
 };
 
+export const obtenerUsuarioPorId = async (id) => {
+  try {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) throw error;
+
+    return { success: true, data };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
 export const updateUsuarioData = async (id_usuario, data) => {
   try {
     const { error } = await supabase
       .from("usuarios")
       .update(data)
-      .eq('id', id_usuario)
+      .eq("id", id_usuario);
 
     if (error) {
       return { success: false, msg: "Error:" + error?.message };
@@ -38,4 +54,3 @@ export const updateUsuarioData = async (id_usuario, data) => {
     return { success: false, msg: error.message };
   }
 };
-

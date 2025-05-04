@@ -54,6 +54,13 @@ const Publicacion = ({ item, usuarioActual, router }) => {
     }
   };
 
+  const verPerfilUsuario = () => {
+    router.push({
+      pathname: "/perfilUsuario",
+      params: { idUsuario: item.id_usuario },
+    });
+  };
+
   const fechaParseada = moment(item?.created_at).format("D MMM");
 
   const manejarLike = async () => {
@@ -123,24 +130,26 @@ const Publicacion = ({ item, usuarioActual, router }) => {
               height: ancho(10),
             }}
           />
-          <View style={{ gap: 0 }}>
-            <Text
-              style={{
-                fontFamily: fuentes.PoppinsSemiBold,
-                fontSize: alto(2),
-              }}
-            >
-              {item?.usuario?.nombre}
-            </Text>
-            <Text
-              style={{
-                fontFamily: fuentes.Poppins,
-                fontSize: alto(1.2),
-              }}
-            >
-              {fechaParseada}
-            </Text>
-          </View>
+          <Pressable onPress={verPerfilUsuario}>
+            <View style={{ gap: 0 }}>
+              <Text
+                style={{
+                  fontFamily: fuentes.PoppinsSemiBold,
+                  fontSize: alto(2),
+                }}
+              >
+                {item?.usuario?.nombre}
+              </Text>
+              <Text
+                style={{
+                  fontFamily: fuentes.Poppins,
+                  fontSize: alto(1.2),
+                }}
+              >
+                {fechaParseada}
+              </Text>
+            </View>
+          </Pressable>
         </View>
       </View>
       <View style={styles.contenido}>

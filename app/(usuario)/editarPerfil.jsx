@@ -106,7 +106,7 @@ const EditarPerfil = () => {
 
   return (
     <GestureHandlerRootView>
-      <Pantalla colorFondo="white" style={{ flex: 1 }}>
+      <ScrollView style={{ padding: ancho(3), paddingVertical: ancho(4) }}>
         <View>
           <ScrollView style={{ padding: ancho(7) }}>
             <Cabecera titulo={"Editar Perfil"} atras={true}></Cabecera>
@@ -182,7 +182,7 @@ const EditarPerfil = () => {
             </View>
           </ScrollView>
         </View>
-      </Pantalla>
+      </ScrollView>
     </GestureHandlerRootView>
   );
 };

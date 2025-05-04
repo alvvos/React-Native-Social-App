@@ -76,8 +76,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: ancho(9),
   },
   welcomeImage: {
-    height: alto(20),
-    width: ancho(50),
+    height: alto(30),
+    width: ancho(55),
     alignSelf: "center",
   },
   titulo: {

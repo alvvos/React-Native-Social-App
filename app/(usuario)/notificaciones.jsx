@@ -81,11 +81,10 @@ const Notificaciones = () => {
   const obtenerIconoPorTipo = (titulo) => {
     const iconos = {
       "Nuevo comentario": "chatbubble-outline",
-      "Nuevo like": "heart-outline"
+      "Nuevo like": "heart-outline",
     };
     return iconos[titulo] || "notifications-outline";
   };
-  
 
   const formatearFecha = (fecha) => {
     const ahora = new Date();
@@ -103,7 +102,6 @@ const Notificaciones = () => {
   };
 
   const manejarClickNotificacion = (notificacion) => {
-    // Lógica para manejar el click en la notificación
     console.log("Notificación clickeada:", notificacion);
   };
 
@@ -188,16 +186,11 @@ const estilos = StyleSheet.create({
     paddingVertical: alto(1),
   },
   itemNotificacion: {
-    backgroundColor: "white",
+    backgroundColor: "#f2f2f2",
     borderRadius: 12,
     marginHorizontal: ancho(2),
     marginVertical: alto(1),
     padding: ancho(3),
-    elevation: 1,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
   },
   contenidoNotificacion: {
     flexDirection: "row",

@@ -7,96 +7,80 @@ import {
   Modal,
   Dimensions,
   ScrollView,
-  TextInput,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import Pantalla from "../../components/Pantalla";
-import { useRouter } from "expo-router";
-import Cabecera from "../../components/Cabecera";
-import { useAuth } from "../../context/AuthContext";
-import { ancho, alto } from "../../helpers/dimensiones";
+import Pantalla from "../components/Pantalla";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import Cabecera from "../components/Cabecera";
+import { ancho, alto } from "../helpers/dimensiones";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { tema } from "../../constants/tema";
+import { tema } from "../constants/tema";
 import { Image } from "expo-image";
 import {
   buscarLikesPorIdPublicacion,
   buscarPublicacionesUsuario,
   obtenerComentariosPorPublicacion,
-  crearOActualizarPublicacion,
-  borrarPublicacionPorId,
-} from "../../services/publicaciones";
-import { fuentes } from "../../constants/fuentes";
+} from "../services/publicaciones";
+import { fuentes } from "../constants/fuentes";
 import { Ionicons } from "@expo/vector-icons";
-import { obtenerImagen } from "../../services/imagenes";
+import { obtenerImagen } from "../services/imagenes";
+import { obtenerUsuarioPorId } from "../services/usuarios";
+import moment from "moment";
 
-const Perfil = () => {
-  const { usuario } = useAuth();
+const PerfilUsuario = () => {
+  const { idUsuario } = useLocalSearchParams();
   const router = useRouter();
   const [publicaciones, setPublicaciones] = useState([]);
   const [publicacionSeleccionada, setPublicacionSeleccionada] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [likes, setLikes] = useState([]);
   const [comentarios, setComentarios] = useState([]);
-  const [editando, setEditando] = useState(false);
-  const [nuevoCuerpo, setNuevoCuerpo] = useState("");
+  const [usuario, setUsuario] = useState(null);
+  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    if (usuario?.id) {
-      obtenerPublicacionesUsuario();
-    }
-  }, []);
+    const cargarDatos = async () => {
+      try {
+        setCargando(true);
+        const resultadoUsuario = await obtenerUsuarioPorId(idUsuario);
+        if (resultadoUsuario.success) {
+          setUsuario(resultadoUsuario.data);
+        } else {
+          throw new Error("Usuario no encontrado");
+        }
 
-  const obtenerPublicacionesUsuario = async () => {
-    const resultado = await buscarPublicacionesUsuario(usuario.id);
-    if (resultado.success) {
-      setPublicaciones(resultado.data);
-    }
-  };
+        const resultadoPublicaciones = await buscarPublicacionesUsuario(
+          idUsuario
+        );
+        if (resultadoPublicaciones.success) {
+          setPublicaciones(resultadoPublicaciones.data);
+        }
+      } catch (error) {
+        console.error("Error cargando perfil:", error);
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    cargarDatos();
+  }, [idUsuario]);
 
   const abrirModalPublicacion = async (publicacion) => {
-    setPublicacionSeleccionada(publicacion);
-    setEditando(false);
-    const resLikes = await buscarLikesPorIdPublicacion(publicacion.id);
-    if (resLikes.success) setLikes(resLikes.data);
-    const resComentarios = await obtenerComentariosPorPublicacion(
-      publicacion.id
-    );
-    if (resComentarios.success) setComentarios(resComentarios.data);
-    setModalVisible(true);
-  };
+    try {
+      setPublicacionSeleccionada(publicacion);
 
-  const borrarPublicacion = async () => {
-    const res = await borrarPublicacionPorId(publicacionSeleccionada.id);
-    if (res.success) {
-      setModalVisible(false);
-      setPublicacionSeleccionada(null);
-      setLikes([]);
-      setComentarios([]);
-      console.log("Publicacion borrada con éxito");
-      obtenerPublicacionesUsuario();
-    }
-  };
+      const [resLikes, resComentarios] = await Promise.all([
+        buscarLikesPorIdPublicacion(publicacion.id),
+        obtenerComentariosPorPublicacion(publicacion.id),
+      ]);
 
-  const manejarEdicion = async () => {
-    if (editando) {
-      const res = await crearOActualizarPublicacion({
-        id: publicacionSeleccionada.id,
-        cuerpo: nuevoCuerpo,
-        id_usuario: usuario.id,
-        archivo: publicacionSeleccionada.archivo,
-      });
+      if (resLikes.success) setLikes(resLikes.data);
+      if (resComentarios.success) setComentarios(resComentarios.data);
 
-      if (res.success) {
-        setPublicacionSeleccionada({
-          ...publicacionSeleccionada,
-          cuerpo: nuevoCuerpo,
-        });
-        setEditando(false);
-        obtenerPublicacionesUsuario();
-      }
-    } else {
-      setNuevoCuerpo(publicacionSeleccionada.cuerpo);
-      setEditando(true);
+      setModalVisible(true);
+    } catch (error) {
+      console.error("Error abriendo publicación:", error);
     }
   };
 
@@ -111,36 +95,63 @@ const Perfil = () => {
         contentFit="cover"
       />
       <View style={styles.publicacionOverlay}>
-        <View>
-          <Text style={styles.textoOverlay}>{item.cuerpo}</Text>
-        </View>
-        <View style={styles.publicacionStats}>
-          <Ionicons name="heart" size={16} color="white" />
-          <Text style={styles.publicacionStatText}>
-            {item.likes_count || 0}
-          </Text>
-        </View>
-        <View style={styles.publicacionStats}>
-          <Ionicons name="chatbubble" size={16} color="white" />
-          <Text style={styles.publicacionStatText}>
-            {item.comments_count || 0}
-          </Text>
+        <Text style={styles.textoOverlay} numberOfLines={2}>
+          {item.cuerpo}
+        </Text>
+        <View style={styles.publicacionStatsContainer}>
+          <View style={styles.publicacionStats}>
+            <Ionicons name="heart" size={16} color="white" />
+            <Text style={styles.publicacionStatText}>
+              {item.likes_count || 0}
+            </Text>
+          </View>
+          <View style={styles.publicacionStats}>
+            <Ionicons name="chatbubble" size={16} color="white" />
+            <Text style={styles.publicacionStatText}>
+              {item.comments_count || 0}
+            </Text>
+          </View>
         </View>
       </View>
     </Pressable>
   );
 
+  if (cargando) {
+    return (
+      <View style={styles.cargandoContainer}>
+        <ActivityIndicator size="large" color={tema.colors.primary} />
+      </View>
+    );
+  }
+
+  if (!usuario) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorTexto}>Usuario no encontrado</Text>
+        <Pressable style={styles.botonVolver} onPress={() => router.back()}>
+          <Text style={styles.botonVolverTexto}>Volver</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Pantalla colorFondo="white">
+      <Pantalla bg="white">
         <View style={styles.contenedorPrincipal}>
-          <Cabecera titulo={usuario?.nombre} atras={true} />
+          <Cabecera
+            titulo={usuario.nombre}
+            atras={true}
+            estiloTitulo={styles.tituloCabecera}
+          />
+
           <View style={styles.seccionUsuario}>
             <View style={styles.perfilHeader}>
               <Image
-                source={obtenerImagen(usuario?.imagen)}
+                source={obtenerImagen(usuario.imagen)}
                 style={styles.avatar}
                 transition={100}
+                contentFit="cover"
               />
               <View style={styles.estadisticasPerfil}>
                 <View style={styles.estadisticaItem}>
@@ -153,33 +164,44 @@ const Perfil = () => {
             </View>
 
             <View style={styles.datosUsuario}>
-              <Text style={styles.nombreUsuario}>{usuario?.nombre}</Text>
+              <Text style={styles.nombreUsuario}>{usuario.nombre}</Text>
               {usuario.biografia && (
                 <Text style={styles.biografia}>{usuario.biografia}</Text>
               )}
-              <View style={styles.datosContacto}>
-                <View style={styles.filaDato}>
-                  <Ionicons
-                    name="mail"
-                    size={alto(3)}
-                    color={tema.colors.iconos}
-                  />
-                  <Text style={styles.textoDato}>{usuario?.email}</Text>
-                </View>
 
-                <View style={styles.filaDato}>
-                  <Ionicons
-                    name="call"
-                    size={alto(3)}
-                    color={tema.colors.iconos}
-                  />
-                  <Text style={styles.textoDato}>{usuario?.telefono}</Text>
-                </View>
+              <View style={styles.datosContacto}>
+                {usuario.email && (
+                  <View style={styles.filaDato}>
+                    <Ionicons
+                      name="mail"
+                      size={alto(2.5)}
+                      color={tema.colors.iconos}
+                    />
+                    <Text style={styles.textoDato}>{usuario.email}</Text>
+                  </View>
+                )}
+
+                {usuario.telefono && (
+                  <View style={styles.filaDato}>
+                    <Ionicons
+                      name="call"
+                      size={alto(2.5)}
+                      color={tema.colors.iconos}
+                    />
+                    <Text style={styles.textoDato}>{usuario.telefono}</Text>
+                  </View>
+                )}
               </View>
             </View>
           </View>
 
           <View style={styles.seccionPublicaciones}>
+            <Text style={styles.tituloPublicaciones}>
+              {publicaciones.length > 0
+                ? "Publicaciones"
+                : "No hay publicaciones"}
+            </Text>
+
             {publicaciones.length > 0 ? (
               <FlatList
                 data={publicaciones}
@@ -198,7 +220,7 @@ const Perfil = () => {
                   color={tema.colors.grisClaro}
                 />
                 <Text style={styles.sinPublicaciones}>
-                  No hay publicaciones aún
+                  {usuario.nombre} no ha compartido publicaciones aún
                 </Text>
               </View>
             )}
@@ -233,15 +255,22 @@ const Perfil = () => {
                     </Pressable>
                   </View>
 
-                  <ScrollView style={styles.modalScroll}>
+                  <ScrollView
+                    style={styles.modalScroll}
+                    showsVerticalScrollIndicator={false}
+                  >
                     <View style={styles.modalUserInfo}>
-                      <Image
-                        source={obtenerImagen(usuario?.imagen)}
-                        style={styles.modalUserImage}
-                      />
-                      <Text style={styles.modalUserName}>
-                        {usuario?.nombre}
-                      </Text>
+                      <Pressable
+                        onPress={() => {
+                          setModalVisible(false);
+                        }}
+                      >
+                        <Image
+                          source={obtenerImagen(usuario.imagen)}
+                          style={styles.modalUserImage}
+                        />
+                      </Pressable>
+                      <Text style={styles.modalUserName}>{usuario.nombre}</Text>
                     </View>
 
                     <View style={styles.modalImagenContainer}>
@@ -251,35 +280,17 @@ const Perfil = () => {
                         contentFit="contain"
                       />
                     </View>
-                    <View
-                      style={{ marginLeft: 20, marginVertical: 5, flex: 1 }}
-                    >
-                      {editando ? (
-                        <TextInput
-                          style={{
-                            fontFamily: fuentes.Poppins,
-                            borderWidth: 1,
-                            borderColor: tema.colors.grisClaro,
-                            borderRadius: 8,
-                            padding: 10,
-                            marginRight: 20,
-                          }}
-                          value={nuevoCuerpo}
-                          onChangeText={setNuevoCuerpo}
-                          multiline
-                        />
-                      ) : (
-                        <View style={{ flexDirection: "row" }}>
-                          <Text style={{ fontFamily: fuentes.PoppinsBold }}>
-                            {usuario?.nombre}
-                            {":  "}
-                          </Text>
-                          <Text style={{ fontFamily: fuentes.Poppins }}>
-                            {publicacionSeleccionada.cuerpo}
-                          </Text>
-                        </View>
-                      )}
+
+                    <View style={styles.modalCuerpoContainer}>
+                      <Text style={styles.modalCuerpoTexto}>
+                        <Text style={styles.modalCuerpoNombre}>
+                          {usuario.nombre}
+                          {":  "}
+                        </Text>
+                        {publicacionSeleccionada.cuerpo}
+                      </Text>
                     </View>
+
                     <View style={styles.interaccionesContainer}>
                       <View style={styles.likesContainer}>
                         <View style={styles.likesComentarios}>
@@ -289,43 +300,17 @@ const Perfil = () => {
                             color={tema.colors.primary}
                           />
                           <Text style={styles.interaccionTexto}>
-                            {likes.length || 0} me gusta
+                            {likes.length} me gusta
+                            {likes.length !== 1 ? "s" : ""}
                           </Text>
-                        </View>
-                        <View style={styles.botonesAccion}>
-                          <Pressable
-                            onPress={manejarEdicion}
-                            style={[
-                              styles.botonAccion,
-                              editando
-                                ? styles.botonGuardar
-                                : styles.botonEditar,
-                            ]}
-                          >
-                            <Ionicons
-                              name={
-                                editando ? "checkmark" : "ellipsis-horizontal"
-                              }
-                              size={20}
-                              color="white"
-                            />
-                          </Pressable>
-
-                          {!editando && (
-                            <Pressable
-                              onPress={borrarPublicacion}
-                              style={[styles.botonAccion, styles.botonEliminar]}
-                            >
-                              <Ionicons name="trash" size={20} color="white" />
-                            </Pressable>
-                          )}
                         </View>
                       </View>
 
                       <View style={styles.comentariosContainer}>
                         <Text style={styles.comentariosTitulo}>
-                          Comentarios
+                          Comentarios ({comentarios.length})
                         </Text>
+
                         {comentarios.length > 0 ? (
                           comentarios.map((comentario) => (
                             <View
@@ -344,6 +329,9 @@ const Perfil = () => {
                                 </Text>
                                 <Text style={styles.comentarioText}>
                                   {comentario.cuerpo}
+                                </Text>
+                                <Text style={styles.comentarioFecha}>
+                                  {moment(comentario.created_at).fromNow()}
                                 </Text>
                               </View>
                             </View>
@@ -375,10 +363,14 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     paddingHorizontal: 20,
   },
+  tituloCabecera: {
+    fontFamily: fuentes.PoppinsSemiBold,
+    fontSize: alto(2.2),
+  },
   seccionUsuario: {
     paddingVertical: 24,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderBottomColor: tema.colors.border,
   },
   perfilHeader: {
     flexDirection: "row",
@@ -387,9 +379,9 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: ancho(22),
+    height: ancho(22),
+    borderRadius: ancho(11),
   },
   estadisticasPerfil: {
     flexDirection: "row",
@@ -406,7 +398,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   estadisticaTexto: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: fuentes.Poppins,
     color: tema.colors.gris,
   },
@@ -417,7 +409,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: fuentes.PoppinsBold,
     color: tema.colors.texto,
+    marginBottom: 8,
+  },
+  biografia: {
+    fontSize: 14,
+    fontFamily: fuentes.Poppins,
+    color: tema.colors.texto,
     marginBottom: 16,
+    lineHeight: 20,
   },
   datosContacto: {
     marginTop: 16,
@@ -425,14 +424,14 @@ const styles = StyleSheet.create({
   filaDato: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 16,
-    paddingVertical: 12,
+    marginBottom: 12,
+    paddingVertical: 10,
     paddingHorizontal: 16,
     backgroundColor: "#f8f8f8",
     borderRadius: 12,
   },
   textoDato: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: fuentes.Poppins,
     color: tema.colors.texto,
     marginLeft: 12,
@@ -474,26 +473,28 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: "rgba(0,0,0,0.3)",
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    opacity: 0,
+    padding: 10,
+    justifyContent: "flex-end",
   },
   textoOverlay: {
     color: "white",
     fontFamily: fuentes.Poppins,
     fontSize: 14,
+    marginBottom: 8,
+  },
+  publicacionStatsContainer: {
+    flexDirection: "row",
   },
   publicacionStats: {
     flexDirection: "row",
     alignItems: "center",
-    marginHorizontal: 12,
+    marginRight: 15,
   },
   publicacionStatText: {
     color: "white",
     marginLeft: 6,
     fontFamily: fuentes.PoppinsSemiBold,
-    fontSize: 16,
+    fontSize: 14,
   },
   sinPublicacionesContainer: {
     flex: 1,
@@ -505,9 +506,10 @@ const styles = StyleSheet.create({
   sinPublicaciones: {
     textAlign: "center",
     marginTop: 24,
-    fontSize: 18,
+    fontSize: 16,
     color: tema.colors.gris,
     fontFamily: fuentes.Poppins,
+    paddingHorizontal: 30,
   },
   modalContainer: {
     flex: 1,
@@ -533,7 +535,7 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: "flex-end",
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderBottomColor: tema.colors.border,
   },
   modalCloseButton: {
     padding: 8,
@@ -546,7 +548,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderBottomColor: tema.colors.border,
   },
   modalUserImage: {
     width: 48,
@@ -567,6 +569,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#fafafa",
     borderRadius: 12,
   },
+  modalCuerpoContainer: {
+    marginLeft: 20,
+    marginVertical: 5,
+    flex: 1,
+    paddingRight: 20,
+  },
+  modalCuerpoTexto: {
+    fontFamily: fuentes.Poppins,
+    fontSize: 15,
+    lineHeight: 22,
+  },
+  modalCuerpoNombre: {
+    fontFamily: fuentes.PoppinsBold,
+  },
   interaccionesContainer: {
     padding: 16,
   },
@@ -584,23 +600,6 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     fontFamily: fuentes.Poppins,
     fontSize: 16,
-  },
-  botonesAccion: {
-    flexDirection: "row",
-    gap: 10,
-  },
-  botonAccion: {
-    padding: 8,
-    borderRadius: 20,
-  },
-  botonEditar: {
-    backgroundColor: "rgba(0, 169, 174, 0.4)",
-  },
-  botonEliminar: {
-    backgroundColor: "#ff3b30",
-  },
-  botonGuardar: {
-    backgroundColor: "#34C759",
   },
   comentariosContainer: {
     marginTop: 16,
@@ -623,7 +622,7 @@ const styles = StyleSheet.create({
   },
   comentarioContent: {
     flex: 1,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: tema.colors.fondoInput,
     padding: 12,
     borderRadius: 12,
   },
@@ -634,7 +633,14 @@ const styles = StyleSheet.create({
   },
   comentarioText: {
     fontFamily: fuentes.Poppins,
-    fontSize: 16,
+    fontSize: 15,
+    lineHeight: 20,
+  },
+  comentarioFecha: {
+    fontFamily: fuentes.Poppins,
+    fontSize: 12,
+    color: tema.colors.gris,
+    marginTop: 4,
   },
   noComentariosText: {
     textAlign: "center",
@@ -643,13 +649,37 @@ const styles = StyleSheet.create({
     color: tema.colors.gris,
     fontSize: 16,
   },
-  biografia: {
-    fontSize: 14,
+  cargandoContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+    padding: 20,
+  },
+  errorTexto: {
     fontFamily: fuentes.Poppins,
+    fontSize: 16,
     color: tema.colors.texto,
-    marginBottom: 16,
-    lineHeight: 20,
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  botonVolver: {
+    backgroundColor: tema.colors.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
+  botonVolverTexto: {
+    color: "white",
+    fontFamily: fuentes.PoppinsSemiBold,
+    fontSize: 16,
   },
 });
 
-export default Perfil;
+export default PerfilUsuario;
