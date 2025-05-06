@@ -11,6 +11,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Boton from "../components/Boton";
 import { supabase } from "../lib/supabase";
 import { fuentes } from "../constants/fuentes";
+import { ScrollView } from "react-native-gesture-handler";
 
 const Registrar = () => {
   const router = useRouter();

@@ -140,7 +140,7 @@ const EditarPerfil = () => {
               </Text>
               <View style={([styles.contenedor], { marginTop: 30, gap: 20 })}>
                 <Campo
-                  //icon={}
+                  icon={"person-outline"}
                   placeholder="Nombre"
                   value={_usuario.nombre}
                   onChangeText={(value) =>
@@ -148,7 +148,7 @@ const EditarPerfil = () => {
                   }
                 />
                 <Campo
-                  //icon={}
+                  icon={"call-outline"}
                   placeholder="Teléfono"
                   keyboardType="phone-pad"
                   value={_usuario.telefono}
@@ -157,7 +157,7 @@ const EditarPerfil = () => {
                   }}
                 />
                 <Campo
-                  //icon={}
+                  icon={"home-outline"}
                   placeholder="Direción"
                   value={_usuario.direccion}
                   onChangeText={(value) => {
@@ -165,6 +165,7 @@ const EditarPerfil = () => {
                   }}
                 />
                 <Campo
+                  icon={"pencil"}
                   contenedorStyles={{ height: ancho(30) }}
                   placeholder="Biografía"
                   value={_usuario.biografia}
