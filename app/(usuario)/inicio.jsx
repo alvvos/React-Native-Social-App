@@ -15,6 +15,7 @@ const Inicio = () => {
   const { usuario, setAuth } = useAuth();
   const router = useRouter();
   const [publicaciones, setPublicaciones] = useState([]);
+  const [refrescando, setRefrescando] = useState(false);
 
   useEffect(() => {
     getPublicaciones();
@@ -25,6 +26,11 @@ const Inicio = () => {
     if (res.success) {
       setPublicaciones(res.data);
     }
+  };
+
+  const manejarRefrescar = () => {
+    setRefrescando(true);
+    getPublicaciones();
   };
 
   return (
@@ -72,6 +78,8 @@ const Inicio = () => {
           showVerticalScrollIndicator={false}
           contentContainerStyle={styles.listStyle}
           keyExtractor={(item) => item.id.toString()}
+          refreshing={refrescando}
+          onRefresh={manejarRefrescar}
           renderItem={({ item }) => (
             <Publicacion item={item} usuarioActual={usuario} router={router} />
           )}

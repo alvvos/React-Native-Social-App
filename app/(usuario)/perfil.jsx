@@ -39,6 +39,7 @@ const Perfil = () => {
   const [comentarios, setComentarios] = useState([]);
   const [editando, setEditando] = useState(false);
   const [nuevoCuerpo, setNuevoCuerpo] = useState("");
+  const [refrescando, setRefrescando] = useState(false);
 
   useEffect(() => {
     if (usuario?.id) {
@@ -51,6 +52,11 @@ const Perfil = () => {
     if (resultado.success) {
       setPublicaciones(resultado.data);
     }
+  };
+
+  const manejarRefrescar = () => {
+    setRefrescando(true);
+    obtenerPublicacionesUsuario();
   };
 
   const abrirModalPublicacion = async (publicacion) => {
@@ -106,7 +112,10 @@ const Perfil = () => {
       style={styles.itemPublicacion}
     >
       <Image
-        source={obtenerImagen(item.archivo)}
+        source={
+          obtenerImagen(item.archivo) ||
+          require("../../assets/images/perfil.png")
+        }
         style={styles.imagenPublicacion}
         contentFit="cover"
       />
@@ -164,7 +173,7 @@ const Perfil = () => {
                     size={alto(3)}
                     color={tema.colors.iconos}
                   />
-                  <Text style={styles.textoDato}>{usuario?.email}</Text>
+                  <Text style={styles.textoDato}>{usuario.email}</Text>
                 </View>
 
                 <View style={styles.filaDato}>
@@ -188,6 +197,8 @@ const Perfil = () => {
                 numColumns={2}
                 columnWrapperStyle={styles.filaPublicaciones}
                 contentContainerStyle={styles.contenedorPublicaciones}
+                refreshing={refrescando}
+                onRefresh={manejarRefrescar}
                 showsVerticalScrollIndicator={false}
               />
             ) : (
