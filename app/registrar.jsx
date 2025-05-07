@@ -22,13 +22,21 @@ const Registrar = () => {
 
   const onSubmit = async () => {
     if (!emailRef || !passwordRef) {
-      Alert.alert("Aviso", "Porfavor completa todos los campos");
+      Alert.alert("Aviso", "Por favor completa todos los campos");
       return;
     }
 
     let name = nameRef.current.trim();
     let email = emailRef.current.trim();
     let password = passwordRef.current.trim();
+
+    if (!email.endsWith("@eep-igroup.com")) {
+      Alert.alert(
+        "Error",
+        "El email debe pertenecer al dominio @eep-igroup.com"
+      );
+      return;
+    }
 
     setLoading(true);
 
@@ -45,8 +53,10 @@ const Registrar = () => {
         },
       },
     });
+
     setLoading(false);
     console.log("session", session);
+
     if (error) {
       switch (error.message) {
         case "Anonymous sign-ins are disabled":
@@ -71,7 +81,6 @@ const Registrar = () => {
       }
     }
   };
-
   return (
     <GestureHandlerRootView style={{ flex: 1, marginTop: 30 }}>
       <ScrollView style={{ padding: ancho(3), paddingVertical: ancho(4) }}>
