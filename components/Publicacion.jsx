@@ -23,7 +23,6 @@ const Publicacion = ({ item, usuarioActual, router }) => {
   const [nuevoComentario, setNuevoComentario] = useState("");
   const [cargandoComentarios, setCargandoComentarios] = useState(false);
 
-  // Cargar likes y verificar like del usuario actual
   useEffect(() => {
     const cargarDatosIniciales = async () => {
       try {
@@ -41,9 +40,8 @@ const Publicacion = ({ item, usuarioActual, router }) => {
     };
 
     cargarDatosIniciales();
-  }, [item.id, usuarioActual.id]);
+  }, [item.id, usuarioActual]);
 
-  // Cargar comentarios solo cuando se abre el modal
   const cargarComentarios = useCallback(async () => {
     try {
       setCargandoComentarios(true);
