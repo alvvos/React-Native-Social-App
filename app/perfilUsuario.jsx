@@ -94,25 +94,6 @@ const PerfilUsuario = () => {
         style={styles.imagenPublicacion}
         contentFit="cover"
       />
-      <View style={styles.publicacionOverlay}>
-        <Text style={styles.textoOverlay} numberOfLines={2}>
-          {item.cuerpo}
-        </Text>
-        <View style={styles.publicacionStatsContainer}>
-          <View style={styles.publicacionStats}>
-            <Ionicons name="heart" size={16} color="white" />
-            <Text style={styles.publicacionStatText}>
-              {item.likes_count || 0}
-            </Text>
-          </View>
-          <View style={styles.publicacionStats}>
-            <Ionicons name="chatbubble" size={16} color="white" />
-            <Text style={styles.publicacionStatText}>
-              {item.comments_count || 0}
-            </Text>
-          </View>
-        </View>
-      </View>
     </Pressable>
   );
 
@@ -370,7 +351,7 @@ const styles = StyleSheet.create({
   seccionUsuario: {
     paddingVertical: 24,
     borderBottomWidth: 1,
-    borderBottomColor: tema.colors.border,
+    borderBottomColor: "#eee",
   },
   perfilHeader: {
     flexDirection: "row",
@@ -535,7 +516,7 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: "flex-end",
     borderBottomWidth: 1,
-    borderBottomColor: tema.colors.border,
+    borderBottomColor: "#eee",
   },
   modalCloseButton: {
     padding: 8,
@@ -548,7 +529,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: tema.colors.border,
+    borderBottomColor: "#eee",
   },
   modalUserImage: {
     width: 48,

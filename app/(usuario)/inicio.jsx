@@ -26,6 +26,7 @@ const Inicio = () => {
     if (res.success) {
       setPublicaciones(res.data);
     }
+    setRefrescando(false);
   };
 
   const manejarRefrescar = () => {

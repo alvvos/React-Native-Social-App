@@ -300,7 +300,8 @@ const Perfil = () => {
                             color={tema.colors.primary}
                           />
                           <Text style={styles.interaccionTexto}>
-                            {likes.length || 0} me gusta
+                            {likes.length} me gusta
+                            {likes.length !== 1 ? "s" : ""}
                           </Text>
                         </View>
                         <View style={styles.botonesAccion}>
@@ -335,7 +336,7 @@ const Perfil = () => {
 
                       <View style={styles.comentariosContainer}>
                         <Text style={styles.comentariosTitulo}>
-                          Comentarios
+                        Comentarios ({comentarios.length})
                         </Text>
                         {comentarios.length > 0 ? (
                           comentarios.map((comentario) => (
