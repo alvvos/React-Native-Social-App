@@ -92,6 +92,24 @@ export const obtenerEtiquetadosPorIdPublicacion = async (idPublicacion) => {
   }
 };
 
+export const contarComentariosPublicacion = async (idPublicacion) => {
+  try {
+    const { data, error } = await supabase
+      .from("comentarios")
+      .select("id", { count: "exact" })
+      .eq("id_publicacion", idPublicacion);
+
+    if (error) {
+      console.log("Error al obtener el número de comentarios: ", error);
+      return { success: false, error: error };
+    }
+    return { success: true, data: data.length };
+  } catch (error) {
+    console.log("Error al obtener el número de comentarios: ", error);
+    return { success: false, error: error };
+  }
+};
+
 export const buscarPublicacionesUsuario = async (usuarioId, limite = 10) => {
   try {
     const { data, error } = await supabase

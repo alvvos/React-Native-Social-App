@@ -29,6 +29,7 @@ import { Video } from "expo-av";
 import { fuentes } from "../../constants/fuentes";
 import { Ionicons } from "@expo/vector-icons";
 import { supabase } from "../../lib/supabase";
+import { crearNotificacion } from "../../services/notificaciones";
 
 const NuevaPublicacion = () => {
   const { usuario } = useAuth();
@@ -72,6 +73,17 @@ const NuevaPublicacion = () => {
     setMostrarModalEtiquetado(true);
   };
 
+  const manejarNotificaciones = async () => {
+    usuariosEtiquetados.forEach(async (etiquetado) => {
+      await crearNotificacion({
+        id_emisor: usuario.id,
+        id_receptor: etiquetado.id,
+        titulo: "Nuevo etiquetado",
+        cuerpo: `@${usuario.nombre} te ha etiquetado en su nueva publicación`,
+      });
+    });
+  };
+
   const seleccionarUsuario = (usuario) => {
     setUsuariosEtiquetados([...usuariosEtiquetados, usuario]);
     setMostrarModalEtiquetado(false);
@@ -102,6 +114,7 @@ const NuevaPublicacion = () => {
 
       const resultado = await crearOActualizarPublicacion(datosPublicacion);
       if (resultado.success) {
+        await manejarNotificaciones();
         setArchivo(null);
         textoRef.current = "";
         setUsuariosEtiquetados([]);

@@ -82,6 +82,7 @@ const Notificaciones = () => {
     const iconos = {
       "Nuevo comentario": "chatbubble-outline",
       "Nuevo like": "heart-outline",
+      "Nuevo etiquetado": "person-add-outline",
     };
     return iconos[titulo] || "notifications-outline";
   };
@@ -186,7 +187,7 @@ const estilos = StyleSheet.create({
     paddingVertical: alto(1),
   },
   itemNotificacion: {
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "#f8f8f8",
     borderRadius: 12,
     marginHorizontal: ancho(2),
     marginVertical: alto(1),

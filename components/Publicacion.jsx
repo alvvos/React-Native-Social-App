@@ -22,6 +22,7 @@ import {
   obtenerComentariosPorPublicacion,
 } from "../services/publicaciones";
 import { crearNotificacion } from "../services/notificaciones";
+import { contarComentariosPublicacion } from "../services/publicaciones";
 
 const Publicacion = ({ item, usuarioActual, router }) => {
   const [likes, setLikes] = useState([]);
@@ -30,6 +31,7 @@ const Publicacion = ({ item, usuarioActual, router }) => {
   const [comentariosModal, setComentariosModal] = useState(false);
   const [nuevoComentario, setNuevoComentario] = useState("");
   const [cargandoComentarios, setCargandoComentarios] = useState(false);
+  const [numeroComentarios, setNumeroComentarios] = useState(0);
 
   useEffect(() => {
     const cargarDatosIniciales = async () => {
@@ -48,7 +50,19 @@ const Publicacion = ({ item, usuarioActual, router }) => {
     };
 
     cargarDatosIniciales();
+    cargarNumeroComentarios();
   }, [item.id, usuarioActual]);
+
+  const cargarNumeroComentarios = async () => {
+    try {
+      const resultado = await contarComentariosPublicacion(item.id);
+      if (resultado.success) {
+        setNumeroComentarios(resultado.data);
+      }
+    } catch (error) {
+      console.error("Error cargando el número de comentarios:", error);
+    }
+  };
 
   const cargarComentarios = useCallback(async () => {
     try {
@@ -109,7 +123,7 @@ const Publicacion = ({ item, usuarioActual, router }) => {
       if (resultado.success) {
         setNuevoComentario("");
         await cargarComentarios();
-
+        await cargarNumeroComentarios();
         await crearNotificacion({
           id_emisor: usuarioActual.id,
           id_receptor: item.id_usuario,
@@ -225,6 +239,7 @@ const Publicacion = ({ item, usuarioActual, router }) => {
               size={21}
               color={tema.colors.iconosDark}
             />
+            <Text style={styles.contadorInteraccion}>{numeroComentarios}</Text>
           </TouchableOpacity>
         </View>
 
