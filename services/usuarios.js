@@ -54,3 +54,18 @@ export const updateUsuarioData = async (id_usuario, data) => {
     return { success: false, msg: error.message };
   }
 };
+
+export const obtenerUsuarios = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .select("*")
+      .order("nombre");
+
+    if (error) throw error;
+
+    return { success: true, data };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};

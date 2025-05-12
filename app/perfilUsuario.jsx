@@ -1,32 +1,30 @@
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
   Text,
   FlatList,
   Pressable,
-  Modal,
   Dimensions,
-  ScrollView,
+  Image,
   ActivityIndicator,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import Pantalla from "../components/Pantalla";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import Pantalla from "../components/Pantalla";
 import Cabecera from "../components/Cabecera";
 import { ancho, alto } from "../helpers/dimensiones";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { tema } from "../constants/tema";
-import { Image } from "expo-image";
-import {
-  buscarLikesPorIdPublicacion,
-  buscarPublicacionesUsuario,
-  obtenerComentariosPorPublicacion,
-} from "../services/publicaciones";
 import { fuentes } from "../constants/fuentes";
 import { Ionicons } from "@expo/vector-icons";
 import { obtenerImagen } from "../services/imagenes";
 import { obtenerUsuarioPorId } from "../services/usuarios";
-import moment from "moment";
+import {
+  buscarPublicacionesUsuario,
+  buscarLikesPorIdPublicacion,
+  obtenerComentariosPorPublicacion,
+} from "../services/publicaciones";
+import PublicacionModalUsuario from "../components/PublicacionModalUsuario";
 
 const PerfilUsuario = () => {
   const { idUsuario } = useLocalSearchParams();
@@ -34,25 +32,27 @@ const PerfilUsuario = () => {
   const [publicaciones, setPublicaciones] = useState([]);
   const [publicacionSeleccionada, setPublicacionSeleccionada] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [likes, setLikes] = useState([]);
-  const [comentarios, setComentarios] = useState([]);
   const [usuario, setUsuario] = useState(null);
   const [cargando, setCargando] = useState(true);
+  const [likes, setLikes] = useState([]);
+  const [comentarios, setComentarios] = useState([]);
 
   useEffect(() => {
     const cargarDatos = async () => {
       try {
         setCargando(true);
-        const resultadoUsuario = await obtenerUsuarioPorId(idUsuario);
+
+        const [resultadoUsuario, resultadoPublicaciones] = await Promise.all([
+          obtenerUsuarioPorId(idUsuario),
+          buscarPublicacionesUsuario(idUsuario),
+        ]);
+
         if (resultadoUsuario.success) {
           setUsuario(resultadoUsuario.data);
         } else {
           throw new Error("Usuario no encontrado");
         }
 
-        const resultadoPublicaciones = await buscarPublicacionesUsuario(
-          idUsuario
-        );
         if (resultadoPublicaciones.success) {
           setPublicaciones(resultadoPublicaciones.data);
         }
@@ -208,134 +208,19 @@ const PerfilUsuario = () => {
           </View>
         </View>
 
-        <Modal
-          animationType="fade"
-          transparent={true}
+        <PublicacionModalUsuario
           visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <View style={styles.modalContainer}>
-            <Pressable
-              style={styles.modalOverlay}
-              onPress={() => setModalVisible(false)}
-            />
-
-            <View style={styles.modalContent}>
-              {publicacionSeleccionada && (
-                <>
-                  <View style={styles.modalHeader}>
-                    <Pressable
-                      onPress={() => setModalVisible(false)}
-                      style={styles.modalCloseButton}
-                    >
-                      <Ionicons
-                        name="close"
-                        size={24}
-                        color={tema.colors.texto}
-                      />
-                    </Pressable>
-                  </View>
-
-                  <ScrollView
-                    style={styles.modalScroll}
-                    showsVerticalScrollIndicator={false}
-                  >
-                    <View style={styles.modalUserInfo}>
-                      <Pressable
-                        onPress={() => {
-                          setModalVisible(false);
-                        }}
-                      >
-                        <Image
-                          source={obtenerImagen(usuario.imagen)}
-                          style={styles.modalUserImage}
-                        />
-                      </Pressable>
-                      <Text style={styles.modalUserName}>{usuario.nombre}</Text>
-                    </View>
-
-                    <View style={styles.modalImagenContainer}>
-                      <Image
-                        source={obtenerImagen(publicacionSeleccionada.archivo)}
-                        style={styles.modalImagen}
-                        contentFit="contain"
-                      />
-                    </View>
-
-                    <View style={styles.modalCuerpoContainer}>
-                      <Text style={styles.modalCuerpoTexto}>
-                        <Text style={styles.modalCuerpoNombre}>
-                          {usuario.nombre}
-                          {":  "}
-                        </Text>
-                        {publicacionSeleccionada.cuerpo}
-                      </Text>
-                    </View>
-
-                    <View style={styles.interaccionesContainer}>
-                      <View style={styles.likesContainer}>
-                        <View style={styles.likesComentarios}>
-                          <Ionicons
-                            name="heart"
-                            size={24}
-                            color={tema.colors.primary}
-                          />
-                          <Text style={styles.interaccionTexto}>
-                            {likes.length} me gusta
-                            {likes.length !== 1 ? "s" : ""}
-                          </Text>
-                        </View>
-                      </View>
-
-                      <View style={styles.comentariosContainer}>
-                        <Text style={styles.comentariosTitulo}>
-                          Comentarios ({comentarios.length})
-                        </Text>
-
-                        {comentarios.length > 0 ? (
-                          comentarios.map((comentario) => (
-                            <View
-                              key={comentario.id}
-                              style={styles.comentarioItem}
-                            >
-                              <Image
-                                source={obtenerImagen(
-                                  comentario.usuario?.imagen
-                                )}
-                                style={styles.comentarioUserImage}
-                              />
-                              <View style={styles.comentarioContent}>
-                                <Text style={styles.comentarioUsername}>
-                                  {comentario.usuario?.nombre}
-                                </Text>
-                                <Text style={styles.comentarioText}>
-                                  {comentario.cuerpo}
-                                </Text>
-                                <Text style={styles.comentarioFecha}>
-                                  {moment(comentario.created_at).fromNow()}
-                                </Text>
-                              </View>
-                            </View>
-                          ))
-                        ) : (
-                          <Text style={styles.noComentariosText}>
-                            No hay comentarios aún
-                          </Text>
-                        )}
-                      </View>
-                    </View>
-                  </ScrollView>
-                </>
-              )}
-            </View>
-          </View>
-        </Modal>
+          onClose={() => setModalVisible(false)}
+          publicacion={publicacionSeleccionada}
+          usuario={usuario}
+          likes={likes}
+          comentarios={comentarios}
+        />
       </Pantalla>
     </GestureHandlerRootView>
   );
 };
 
-const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
 
 const styles = StyleSheet.create({
@@ -447,36 +332,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  publicacionOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.3)",
-    padding: 10,
-    justifyContent: "flex-end",
-  },
-  textoOverlay: {
-    color: "white",
-    fontFamily: fuentes.Poppins,
-    fontSize: 14,
-    marginBottom: 8,
-  },
-  publicacionStatsContainer: {
-    flexDirection: "row",
-  },
-  publicacionStats: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginRight: 15,
-  },
-  publicacionStatText: {
-    color: "white",
-    marginLeft: 6,
-    fontFamily: fuentes.PoppinsSemiBold,
-    fontSize: 14,
-  },
   sinPublicacionesContainer: {
     flex: 1,
     justifyContent: "center",
@@ -491,144 +346,6 @@ const styles = StyleSheet.create({
     color: tema.colors.gris,
     fontFamily: fuentes.Poppins,
     paddingHorizontal: 30,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.8)",
-  },
-  modalOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-  modalContent: {
-    width: "90%",
-    maxHeight: windowHeight * 0.85,
-    backgroundColor: "white",
-    borderRadius: 16,
-    overflow: "hidden",
-  },
-  modalHeader: {
-    padding: 16,
-    alignItems: "flex-end",
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  modalCloseButton: {
-    padding: 8,
-  },
-  modalScroll: {
-    paddingBottom: 24,
-  },
-  modalUserInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  modalUserImage: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    marginRight: 12,
-  },
-  modalUserName: {
-    fontFamily: fuentes.PoppinsSemiBold,
-    fontSize: 16,
-  },
-  modalImagenContainer: {
-    padding: 16,
-  },
-  modalImagen: {
-    width: "100%",
-    height: windowWidth * 0.9 - 32,
-    backgroundColor: "#fafafa",
-    borderRadius: 12,
-  },
-  modalCuerpoContainer: {
-    marginLeft: 20,
-    marginVertical: 5,
-    flex: 1,
-    paddingRight: 20,
-  },
-  modalCuerpoTexto: {
-    fontFamily: fuentes.Poppins,
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  modalCuerpoNombre: {
-    fontFamily: fuentes.PoppinsBold,
-  },
-  interaccionesContainer: {
-    padding: 16,
-  },
-  likesContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 5,
-  },
-  likesComentarios: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  interaccionTexto: {
-    marginLeft: 12,
-    fontFamily: fuentes.Poppins,
-    fontSize: 16,
-  },
-  comentariosContainer: {
-    marginTop: 16,
-  },
-  comentariosTitulo: {
-    fontFamily: fuentes.PoppinsBold,
-    fontSize: 18,
-    marginBottom: 16,
-  },
-  comentarioItem: {
-    flexDirection: "row",
-    marginBottom: 16,
-    alignItems: "flex-start",
-  },
-  comentarioUserImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 12,
-  },
-  comentarioContent: {
-    flex: 1,
-    backgroundColor: tema.colors.fondoInput,
-    padding: 12,
-    borderRadius: 12,
-  },
-  comentarioUsername: {
-    fontFamily: fuentes.PoppinsSemiBold,
-    fontSize: 16,
-    marginBottom: 4,
-  },
-  comentarioText: {
-    fontFamily: fuentes.Poppins,
-    fontSize: 15,
-    lineHeight: 20,
-  },
-  comentarioFecha: {
-    fontFamily: fuentes.Poppins,
-    fontSize: 12,
-    color: tema.colors.gris,
-    marginTop: 4,
-  },
-  noComentariosText: {
-    textAlign: "center",
-    marginVertical: 24,
-    fontFamily: fuentes.Poppins,
-    color: tema.colors.gris,
-    fontSize: 16,
   },
   cargandoContainer: {
     flex: 1,

@@ -1,4 +1,12 @@
-import { Image, StyleSheet, Text, View, Modal, TextInput, FlatList } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  Modal,
+  TextInput,
+  FlatList,
+} from "react-native";
 import React, { useEffect, useState, useCallback } from "react";
 import { ancho, alto } from "../helpers/dimensiones";
 import { tema } from "../constants/tema";
@@ -69,7 +77,7 @@ const Publicacion = ({ item, usuarioActual, router }) => {
         item.id,
         usuarioActual.id
       );
-      
+
       if (resultado.success) {
         setLikes(resultado.data);
         setLikeYaExistente(resultado.accion === "like_agregado");
@@ -101,7 +109,7 @@ const Publicacion = ({ item, usuarioActual, router }) => {
       if (resultado.success) {
         setNuevoComentario("");
         await cargarComentarios();
-        
+
         await crearNotificacion({
           id_emisor: usuarioActual.id,
           id_receptor: item.id_usuario,
@@ -112,25 +120,51 @@ const Publicacion = ({ item, usuarioActual, router }) => {
     } catch (error) {
       console.error("Error publicando comentario:", error);
     }
-  }, [item.id, item.id_usuario, nuevoComentario, usuarioActual, cargarComentarios]);
+  }, [
+    item.id,
+    item.id_usuario,
+    nuevoComentario,
+    usuarioActual,
+    cargarComentarios,
+  ]);
 
-  const renderComentario = useCallback(({ item: comentario }) => (
-    <View style={styles.comentarioItem}>
-      <Image
-        source={obtenerImagen(comentario.usuario?.imagen)}
-        style={styles.comentarioUserImage}
-      />
-      <View style={styles.comentarioContent}>
-        <Text style={styles.comentarioUsername}>
-          {comentario.usuario?.nombre}
-        </Text>
-        <Text style={styles.comentarioText}>{comentario.cuerpo}</Text>
-        <Text style={styles.comentarioFecha}>
-          {moment(comentario.created_at).fromNow()}
-        </Text>
+  const renderComentario = useCallback(
+    ({ item: comentario }) => (
+      <View style={styles.comentarioItem}>
+        <Image
+          source={obtenerImagen(comentario.usuario?.imagen)}
+          style={styles.comentarioUserImage}
+        />
+        <View style={styles.comentarioContent}>
+          <Text style={styles.comentarioUsername}>
+            {comentario.usuario?.nombre}
+          </Text>
+          <Text style={styles.comentarioText}>{comentario.cuerpo}</Text>
+          <Text style={styles.comentarioFecha}>
+            {moment(comentario.created_at).fromNow()}
+          </Text>
+        </View>
       </View>
-    </View>
-  ), []);
+    ),
+    []
+  );
+
+  const renderEtiquetado = useCallback(
+    (etiquetado) => (
+      <Pressable
+        key={etiquetado.id}
+        onPress={() =>
+          router.push({
+            pathname: "/perfilUsuario",
+            params: { idUsuario: etiquetado.id },
+          })
+        }
+      >
+        <Text style={styles.etiquetadoNombre}>@{etiquetado.nombre}</Text>
+      </Pressable>
+    ),
+    []
+  );
 
   const fechaParseada = moment(item?.created_at).format("D MMM");
 
@@ -139,27 +173,27 @@ const Publicacion = ({ item, usuarioActual, router }) => {
       <View style={styles.cabecera}>
         <View style={{ flexDirection: "row", gap: 15 }}>
           <Image
-            source={obtenerImagen(item?.usuario?.imagen)}
+            source={obtenerImagen(item?.autor?.imagen)}
             transition={100}
             borderRadius={100}
             style={styles.avatar}
           />
-          <Pressable onPress={() => router.push({
-            pathname: "/perfilUsuario",
-            params: { idUsuario: item.id_usuario },
-          })}>
+          <Pressable
+            onPress={() =>
+              router.push({
+                pathname: "/perfilUsuario",
+                params: { idUsuario: item.id_usuario },
+              })
+            }
+          >
             <View style={{ gap: 0 }}>
-              <Text style={styles.nombreUsuario}>
-                {item?.usuario?.nombre}
-              </Text>
-              <Text style={styles.fechaPublicacion}>
-                {fechaParseada}
-              </Text>
+              <Text style={styles.nombreUsuario}>{item?.autor?.nombre}</Text>
+              <Text style={styles.fechaPublicacion}>{fechaParseada}</Text>
             </View>
           </Pressable>
         </View>
       </View>
-      
+
       <View style={styles.contenido}>
         <Image
           source={obtenerImagen(item?.archivo)}
@@ -167,19 +201,21 @@ const Publicacion = ({ item, usuarioActual, router }) => {
           borderRadius={tema.radius.sm}
           style={styles.imagenPublicacion}
         />
-        
+
         <View style={styles.interacciones}>
           <View style={styles.botonInteraccion}>
             <Pressable onPress={manejarLike}>
-              <Ionicons 
-                name={likeYaExistente ? "heart" : "heart-outline"} 
-                size={23} 
-                color={likeYaExistente ? tema.colors.iconos : tema.colors.iconosDark} 
+              <Ionicons
+                name={likeYaExistente ? "heart" : "heart-outline"}
+                size={23}
+                color={
+                  likeYaExistente ? tema.colors.iconos : tema.colors.iconosDark
+                }
               />
             </Pressable>
             <Text style={styles.contadorInteraccion}>{likes?.length}</Text>
           </View>
-          
+
           <TouchableOpacity
             style={styles.botonInteraccion}
             onPress={toggleComentariosModal}
@@ -191,13 +227,24 @@ const Publicacion = ({ item, usuarioActual, router }) => {
             />
           </TouchableOpacity>
         </View>
-        
+
         <View style={styles.cuerpo}>
           <Text style={styles.textoCuerpo}>
-            <Text style={styles.nombreUsuarioCuerpo}>{item?.usuario?.nombre}</Text>
+            <Text style={styles.nombreUsuarioCuerpo}>
+              {item?.autor?.nombre}
+            </Text>
             {": "}
             {item?.cuerpo}
           </Text>
+
+          {item.etiquetados && item.etiquetados.length > 0 && (
+            <View style={styles.etiquetadosContainer}>
+              <Text style={styles.etiquetadosTitulo}>Etiquetados:</Text>
+              <View style={styles.etiquetadosLista}>
+                {item.etiquetados.map(renderEtiquetado)}
+              </View>
+            </View>
+          )}
         </View>
       </View>
 
@@ -288,7 +335,7 @@ const styles = StyleSheet.create({
   imagenPublicacion: {
     width: ancho(80),
     height: ancho(80),
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   interacciones: {
     flexDirection: "row",
@@ -315,6 +362,27 @@ const styles = StyleSheet.create({
   nombreUsuarioCuerpo: {
     fontWeight: tema.fonts.bold,
     color: "black",
+  },
+  etiquetadosContainer: {
+    marginTop: 10,
+  },
+  etiquetadosTitulo: {
+    fontFamily: fuentes.PoppinsSemiBold,
+    color: tema.colors.textSecondary,
+    marginBottom: 5,
+  },
+  etiquetadosLista: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 5,
+  },
+  etiquetadoNombre: {
+    fontFamily: fuentes.Poppins,
+    color: tema.colors.primary,
+    backgroundColor: tema.colors.fondoSecundario,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 10,
   },
   modalOverlay: {
     flex: 1,

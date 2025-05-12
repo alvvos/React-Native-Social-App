@@ -1,33 +1,26 @@
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
   Text,
   FlatList,
   Pressable,
-  Modal,
   Dimensions,
-  ScrollView,
-  TextInput,
+  Image,
+  ActivityIndicator,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import Pantalla from "../../components/Pantalla";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useRouter } from "expo-router";
+import Pantalla from "../../components/Pantalla";
 import Cabecera from "../../components/Cabecera";
 import { useAuth } from "../../context/AuthContext";
 import { ancho, alto } from "../../helpers/dimensiones";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { tema } from "../../constants/tema";
-import { Image } from "expo-image";
-import {
-  buscarLikesPorIdPublicacion,
-  buscarPublicacionesUsuario,
-  obtenerComentariosPorPublicacion,
-  crearOActualizarPublicacion,
-  borrarPublicacionPorId,
-} from "../../services/publicaciones";
 import { fuentes } from "../../constants/fuentes";
 import { Ionicons } from "@expo/vector-icons";
 import { obtenerImagen } from "../../services/imagenes";
+import { buscarPublicacionesUsuario } from "../../services/publicaciones";
+import PublicacionModal from "../../components/PublicacionModal";
 
 const Perfil = () => {
   const { usuario } = useAuth();
@@ -35,75 +28,40 @@ const Perfil = () => {
   const [publicaciones, setPublicaciones] = useState([]);
   const [publicacionSeleccionada, setPublicacionSeleccionada] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [likes, setLikes] = useState([]);
-  const [comentarios, setComentarios] = useState([]);
-  const [editando, setEditando] = useState(false);
-  const [nuevoCuerpo, setNuevoCuerpo] = useState("");
   const [refrescando, setRefrescando] = useState(false);
 
   useEffect(() => {
     if (usuario?.id) {
       obtenerPublicacionesUsuario();
     }
-  }, []);
+  }, [usuario]);
 
   const obtenerPublicacionesUsuario = async () => {
+    setRefrescando(true);
     const resultado = await buscarPublicacionesUsuario(usuario.id);
     if (resultado.success) {
       setPublicaciones(resultado.data);
     }
+    setRefrescando(false);
   };
 
-  const manejarRefrescar = () => {
-    setRefrescando(true);
-    obtenerPublicacionesUsuario();
-  };
-
-  const abrirModalPublicacion = async (publicacion) => {
+  const abrirModalPublicacion = (publicacion) => {
     setPublicacionSeleccionada(publicacion);
-    setEditando(false);
-    const resLikes = await buscarLikesPorIdPublicacion(publicacion.id);
-    if (resLikes.success) setLikes(resLikes.data);
-    const resComentarios = await obtenerComentariosPorPublicacion(
-      publicacion.id
-    );
-    if (resComentarios.success) setComentarios(resComentarios.data);
     setModalVisible(true);
   };
 
-  const borrarPublicacion = async () => {
-    const res = await borrarPublicacionPorId(publicacionSeleccionada.id);
-    if (res.success) {
-      setModalVisible(false);
-      setPublicacionSeleccionada(null);
-      setLikes([]);
-      setComentarios([]);
-      console.log("Publicacion borrada con éxito");
-      obtenerPublicacionesUsuario();
-    }
+  const handlePublicacionActualizada = (publicacionActualizada) => {
+    setPublicaciones(
+      publicaciones.map((p) =>
+        p.id === publicacionActualizada.id ? publicacionActualizada : p
+      )
+    );
   };
 
-  const manejarEdicion = async () => {
-    if (editando) {
-      const res = await crearOActualizarPublicacion({
-        id: publicacionSeleccionada.id,
-        cuerpo: nuevoCuerpo,
-        id_usuario: usuario.id,
-        archivo: publicacionSeleccionada.archivo,
-      });
-
-      if (res.success) {
-        setPublicacionSeleccionada({
-          ...publicacionSeleccionada,
-          cuerpo: nuevoCuerpo,
-        });
-        setEditando(false);
-        obtenerPublicacionesUsuario();
-      }
-    } else {
-      setNuevoCuerpo(publicacionSeleccionada.cuerpo);
-      setEditando(true);
-    }
+  const handlePublicacionEliminada = () => {
+    setPublicaciones(
+      publicaciones.filter((p) => p.id !== publicacionSeleccionada.id)
+    );
   };
 
   const renderizarPublicacion = ({ item }) => (
@@ -144,6 +102,7 @@ const Perfil = () => {
       <Pantalla colorFondo="white">
         <View style={styles.contenedorPrincipal}>
           <Cabecera titulo={usuario?.nombre} atras={true} />
+
           <View style={styles.seccionUsuario}>
             <View style={styles.perfilHeader}>
               <Image
@@ -175,7 +134,6 @@ const Perfil = () => {
                   />
                   <Text style={styles.textoDato}>{usuario.email}</Text>
                 </View>
-
                 <View style={styles.filaDato}>
                   <Ionicons
                     name="call"
@@ -198,7 +156,7 @@ const Perfil = () => {
                 columnWrapperStyle={styles.filaPublicaciones}
                 contentContainerStyle={styles.contenedorPublicaciones}
                 refreshing={refrescando}
-                onRefresh={manejarRefrescar}
+                onRefresh={obtenerPublicacionesUsuario}
                 showsVerticalScrollIndicator={false}
               />
             ) : (
@@ -216,169 +174,19 @@ const Perfil = () => {
           </View>
         </View>
 
-        <Modal
-          animationType="fade"
-          transparent={true}
+        <PublicacionModal
           visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <View style={styles.modalContainer}>
-            <Pressable
-              style={styles.modalOverlay}
-              onPress={() => setModalVisible(false)}
-            />
-
-            <View style={styles.modalContent}>
-              {publicacionSeleccionada && (
-                <>
-                  <View style={styles.modalHeader}>
-                    <Pressable
-                      onPress={() => setModalVisible(false)}
-                      style={styles.modalCloseButton}
-                    >
-                      <Ionicons
-                        name="close"
-                        size={24}
-                        color={tema.colors.texto}
-                      />
-                    </Pressable>
-                  </View>
-
-                  <ScrollView style={styles.modalScroll}>
-                    <View style={styles.modalUserInfo}>
-                      <Image
-                        source={obtenerImagen(usuario?.imagen)}
-                        style={styles.modalUserImage}
-                      />
-                      <Text style={styles.modalUserName}>
-                        {usuario?.nombre}
-                      </Text>
-                    </View>
-
-                    <View style={styles.modalImagenContainer}>
-                      <Image
-                        source={obtenerImagen(publicacionSeleccionada.archivo)}
-                        style={styles.modalImagen}
-                        contentFit="contain"
-                      />
-                    </View>
-                    <View
-                      style={{ marginLeft: 20, marginVertical: 5, flex: 1 }}
-                    >
-                      {editando ? (
-                        <TextInput
-                          style={{
-                            fontFamily: fuentes.Poppins,
-                            borderWidth: 1,
-                            borderColor: tema.colors.grisClaro,
-                            borderRadius: 8,
-                            padding: 10,
-                            marginRight: 20,
-                          }}
-                          value={nuevoCuerpo}
-                          onChangeText={setNuevoCuerpo}
-                          multiline
-                        />
-                      ) : (
-                        <View style={{ flexDirection: "row" }}>
-                          <Text style={{ fontFamily: fuentes.PoppinsBold }}>
-                            {usuario?.nombre}
-                            {":  "}
-                          </Text>
-                          <Text style={{ fontFamily: fuentes.Poppins }}>
-                            {publicacionSeleccionada.cuerpo}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
-                    <View style={styles.interaccionesContainer}>
-                      <View style={styles.likesContainer}>
-                        <View style={styles.likesComentarios}>
-                          <Ionicons
-                            name="heart"
-                            size={24}
-                            color={tema.colors.primary}
-                          />
-                          <Text style={styles.interaccionTexto}>
-                            {likes.length} me gusta
-                            {likes.length !== 1 ? "s" : ""}
-                          </Text>
-                        </View>
-                        <View style={styles.botonesAccion}>
-                          <Pressable
-                            onPress={manejarEdicion}
-                            style={[
-                              styles.botonAccion,
-                              editando
-                                ? styles.botonGuardar
-                                : styles.botonEditar,
-                            ]}
-                          >
-                            <Ionicons
-                              name={
-                                editando ? "checkmark" : "ellipsis-horizontal"
-                              }
-                              size={20}
-                              color="white"
-                            />
-                          </Pressable>
-
-                          {!editando && (
-                            <Pressable
-                              onPress={borrarPublicacion}
-                              style={[styles.botonAccion, styles.botonEliminar]}
-                            >
-                              <Ionicons name="trash" size={20} color="white" />
-                            </Pressable>
-                          )}
-                        </View>
-                      </View>
-
-                      <View style={styles.comentariosContainer}>
-                        <Text style={styles.comentariosTitulo}>
-                        Comentarios ({comentarios.length})
-                        </Text>
-                        {comentarios.length > 0 ? (
-                          comentarios.map((comentario) => (
-                            <View
-                              key={comentario.id}
-                              style={styles.comentarioItem}
-                            >
-                              <Image
-                                source={obtenerImagen(
-                                  comentario.usuario?.imagen
-                                )}
-                                style={styles.comentarioUserImage}
-                              />
-                              <View style={styles.comentarioContent}>
-                                <Text style={styles.comentarioUsername}>
-                                  {comentario.usuario?.nombre}
-                                </Text>
-                                <Text style={styles.comentarioText}>
-                                  {comentario.cuerpo}
-                                </Text>
-                              </View>
-                            </View>
-                          ))
-                        ) : (
-                          <Text style={styles.noComentariosText}>
-                            No hay comentarios aún
-                          </Text>
-                        )}
-                      </View>
-                    </View>
-                  </ScrollView>
-                </>
-              )}
-            </View>
-          </View>
-        </Modal>
+          onClose={() => setModalVisible(false)}
+          publicacion={publicacionSeleccionada}
+          usuario={usuario}
+          onPublicacionActualizada={handlePublicacionActualizada}
+          onPublicacionEliminada={handlePublicacionEliminada}
+        />
       </Pantalla>
     </GestureHandlerRootView>
   );
 };
 
-const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
 
 const styles = StyleSheet.create({
@@ -431,6 +239,13 @@ const styles = StyleSheet.create({
     color: tema.colors.texto,
     marginBottom: 16,
   },
+  biografia: {
+    fontSize: 14,
+    fontFamily: fuentes.Poppins,
+    color: tema.colors.texto,
+    marginBottom: 16,
+    lineHeight: 20,
+  },
   datosContacto: {
     marginTop: 16,
   },
@@ -452,12 +267,6 @@ const styles = StyleSheet.create({
   seccionPublicaciones: {
     flex: 1,
     paddingTop: 24,
-  },
-  tituloPublicaciones: {
-    fontSize: 18,
-    fontFamily: fuentes.PoppinsSemiBold,
-    color: tema.colors.texto,
-    marginBottom: 20,
   },
   contenedorPublicaciones: {
     paddingBottom: 24,
@@ -520,147 +329,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: tema.colors.gris,
     fontFamily: fuentes.Poppins,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.8)",
-  },
-  modalOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-  modalContent: {
-    width: "90%",
-    maxHeight: windowHeight * 0.85,
-    backgroundColor: "white",
-    borderRadius: 16,
-    overflow: "hidden",
-  },
-  modalHeader: {
-    padding: 16,
-    alignItems: "flex-end",
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  modalCloseButton: {
-    padding: 8,
-  },
-  modalScroll: {
-    paddingBottom: 24,
-  },
-  modalUserInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  modalUserImage: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    marginRight: 12,
-  },
-  modalUserName: {
-    fontFamily: fuentes.PoppinsSemiBold,
-    fontSize: 16,
-  },
-  modalImagenContainer: {
-    padding: 16,
-  },
-  modalImagen: {
-    width: "100%",
-    height: windowWidth * 0.9 - 32,
-    backgroundColor: "#fafafa",
-    borderRadius: 12,
-  },
-  interaccionesContainer: {
-    padding: 16,
-  },
-  likesContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 5,
-  },
-  likesComentarios: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  interaccionTexto: {
-    marginLeft: 12,
-    fontFamily: fuentes.Poppins,
-    fontSize: 16,
-  },
-  botonesAccion: {
-    flexDirection: "row",
-    gap: 10,
-  },
-  botonAccion: {
-    padding: 8,
-    borderRadius: 20,
-  },
-  botonEditar: {
-    backgroundColor: "rgba(0, 169, 174, 0.4)",
-  },
-  botonEliminar: {
-    backgroundColor: "#ff3b30",
-  },
-  botonGuardar: {
-    backgroundColor: "#34C759",
-  },
-  comentariosContainer: {
-    marginTop: 16,
-  },
-  comentariosTitulo: {
-    fontFamily: fuentes.PoppinsBold,
-    fontSize: 18,
-    marginBottom: 16,
-  },
-  comentarioItem: {
-    flexDirection: "row",
-    marginBottom: 16,
-    alignItems: "flex-start",
-  },
-  comentarioUserImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 12,
-  },
-  comentarioContent: {
-    flex: 1,
-    backgroundColor: "#f8f8f8",
-    padding: 12,
-    borderRadius: 12,
-  },
-  comentarioUsername: {
-    fontFamily: fuentes.PoppinsSemiBold,
-    fontSize: 16,
-    marginBottom: 4,
-  },
-  comentarioText: {
-    fontFamily: fuentes.Poppins,
-    fontSize: 16,
-  },
-  noComentariosText: {
-    textAlign: "center",
-    marginVertical: 24,
-    fontFamily: fuentes.Poppins,
-    color: tema.colors.gris,
-    fontSize: 16,
-  },
-  biografia: {
-    fontSize: 14,
-    fontFamily: fuentes.Poppins,
-    color: tema.colors.texto,
-    marginBottom: 16,
-    lineHeight: 20,
   },
 });
 

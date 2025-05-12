@@ -12,22 +12,35 @@ export const crearOActualizarPublicacion = async (publicacion) => {
         esImagen
       );
       if (resultado.success) publicacion.archivo = resultado.data;
-      else {
-        return resultado;
-      }
+      else return resultado;
     }
 
-    const { data, error } = await supabase
+    const { data: publicacionData, error: publicacionError } = await supabase
       .from("publicaciones")
-      .upsert(publicacion)
+      .upsert({
+        cuerpo: publicacion.cuerpo,
+        archivo: publicacion.archivo,
+        id_usuario: publicacion.id_usuario,
+      })
       .select()
       .single();
 
-    if (error) {
-      console.log("Error al crear o actualizar publicacion: ", error);
-      return { success: false, error: error };
+    if (publicacionError) throw publicacionError;
+
+    if (publicacion.etiquetados && publicacion.etiquetados.length > 0) {
+      const etiquetadosData = publicacion.etiquetados.map((id_usuario) => ({
+        id_publicacion: publicacionData.id,
+        id_usuario,
+      }));
+
+      const { error: etiquetadosError } = await supabase
+        .from("etiquetados")
+        .insert(etiquetadosData);
+
+      if (etiquetadosError) throw etiquetadosError;
     }
-    return { success: true, data: data };
+
+    return { success: true, data: publicacionData };
   } catch (error) {
     console.log("Error al crear o actualizar publicacion: ", error);
     return { success: false, error: error };
@@ -40,7 +53,7 @@ export const buscarPublicacion = async (limite = 10) => {
       .from("publicaciones")
       .select(
         `*,
-        usuario: usuarios (id, nombre, imagen)
+        autor:usuarios!id_usuario(id, nombre, imagen)
         `
       )
       .limit(limite)
@@ -56,13 +69,36 @@ export const buscarPublicacion = async (limite = 10) => {
   }
 };
 
+export const obtenerEtiquetadosPorIdPublicacion = async (idPublicacion) => {
+  try {
+    const { data, error } = await supabase
+      .from("etiquetados")
+      .select(
+        `id,
+        id_usuario(id, nombre, imagen)
+        `
+      )
+      .eq("id_publicacion", idPublicacion)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.log("Error al obtener etiquetados de la publicación: ", error);
+      return { success: false, error: error };
+    }
+    return { success: true, data: data };
+  } catch (error) {
+    console.log("Error al obtener etiquetados de la publicación: ", error);
+    return { success: false, error: error };
+  }
+};
+
 export const buscarPublicacionesUsuario = async (usuarioId, limite = 10) => {
   try {
     const { data, error } = await supabase
       .from("publicaciones")
       .select(
         `*,
-        usuario: usuarios (id, nombre, imagen)
+        autor:usuarios!id_usuario(id, nombre, imagen)
         `
       )
       .eq("id_usuario", usuarioId)
@@ -101,7 +137,11 @@ export const buscarLikesPorIdPublicacion = async (idPublicacion) => {
   try {
     const { data, error } = await supabase
       .from("me_gustas")
-      .select(`*`)
+      .select(
+        `*,
+        usuario:usuarios(id, nombre, imagen)
+        `
+      )
       .eq("id_publicacion", idPublicacion)
       .order("created_at", { ascending: false });
 
@@ -159,7 +199,7 @@ export const agregarLikePorIdPublicacion = async (idPublicacion, idUsuario) => {
       .select(
         `
         *,
-        usuario:usuarios(id, nombre)
+        usuario:usuarios(id, nombre, imagen)
       `
       )
       .eq("id_publicacion", idPublicacion);
