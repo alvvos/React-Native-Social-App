@@ -18,11 +18,13 @@ import { updateUsuarioData } from "../../services/usuarios";
 import { Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { obtenerImagen, subirImagen } from "../../services/imagenes";
+import { supabase_url } from "../../services/imagenes";
 import { fuentes } from "../../constants/fuentes";
 import { Ionicons } from "@expo/vector-icons";
 
 const EditarPerfil = () => {
   const { usuario, setAuth, setUsuarioData } = useAuth();
+  const [archivo, setArchivo] = useState(null);
   const _id = usuario.id;
   const [_usuario, setUsuario] = useState({
     nombre: "",
@@ -48,6 +50,13 @@ const EditarPerfil = () => {
       });
     }
   }, [usuario]);
+
+  const obtenerUriArchivo = (archivo) => {
+    const pdefecto = require("../../assets/images/perfil.png");
+    if (archivo == null) return pdefecto;
+    if (typeof archivo === "object") return archivo.uri;
+    return supabase_url(archivo.uri);
+  };
 
   const cambiarDatos = async () => {
     let data = { ..._usuario };
@@ -101,6 +110,7 @@ const EditarPerfil = () => {
 
     if (!res.canceled) {
       setUsuario({ ..._usuario, imagen: res.assets[0] });
+      setArchivo(res.assets[0]);
     }
   };
 
@@ -112,7 +122,10 @@ const EditarPerfil = () => {
             <Cabecera titulo={"Editar Perfil"} atras={true}></Cabecera>
             <View style={styles.contenedorAvatar}>
               <Image
-                source={obtenerImagen(usuario?.imagen)}
+                source={
+                  obtenerUriArchivo(archivo) ||
+                  require("../../assets/images/perfil.png")
+                }
                 size={ancho(1)}
                 borderRadius={100}
                 alignSelf="center"

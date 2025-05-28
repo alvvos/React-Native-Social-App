@@ -1,0 +1,8 @@
+(defun c:TRIMETRICA3D ( / )
+  (princ "\nCambiando a vista trimétrica personalizada...")
+  ;; Establece el punto de vista usando los coeficientes de reducción
+  ;; como vector de dirección de la cámara
+  (command "_VPOINT" "0.985,0.493,0.990")
+  (princ "\nVista trimétrica aplicada correctamente.")
+  (princ)
+)
